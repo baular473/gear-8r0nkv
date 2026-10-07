@@ -51,7 +51,8 @@
   .insc-sec-h span{color:var(--mut);font-weight:500;}
   table.insc-in{width:100%;border-collapse:collapse;font-size:12px;}
   table.insc-in th{color:var(--mut);font-weight:700;text-align:center;padding:5px 4px;border-bottom:1px solid var(--line);font-size:11px;}
-  table.insc-in th.atk{color:var(--atk);} table.insc-in th.def{color:var(--def);} table.insc-in th.hp{color:var(--hp);}
+  table.insc-in th.atk{color:var(--atk);} table.insc-in th.def{color:var(--def);} table.insc-in th.hp{color:var(--hp);} table.insc-in th.all{color:var(--gold2);}
+  .drop small{color:var(--mut);font-weight:500;font-size:10.5px;}
   table.insc-in td{padding:5px 4px;}
   table.insc-in td.slot{color:var(--gold2);font-weight:700;white-space:nowrap;font-size:11.5px;}
   table.insc-in input{width:100%;padding:7px 6px;text-align:center;}
@@ -104,6 +105,7 @@
   .insc-slot .st b.a{background:rgba(255,107,107,.14);color:var(--atk);}
   .insc-slot .st b.d{background:rgba(91,179,255,.14);color:var(--def);}
   .insc-slot .st b.h{background:rgba(79,212,138,.14);color:var(--hp);}
+  .insc-slot .st b.al{background:rgba(245,185,66,.15);color:var(--gold2);}
   .insc-slot .bn{font-size:10.5px;color:#c7d2e6;margin-top:4px;line-height:1.4;}
   .insc-slot .bn .p{color:var(--delta);font-weight:700;}
 
@@ -225,20 +227,20 @@
       </div>
       <div class="row">
         <label class="fld" style="flex:1">① 장비 스크린샷 *
-          <div class="drop" id="d-eq">장비 그리드 사진 선택/드래그
+          <div class="drop" id="d-eq">게임 장비 화면 사진 선택/드래그<br><small>업로드하면 자동으로 글자를 읽어 아래 항목을 채웁니다</small>
             <input type="file" id="f-eq" accept="image/*" hidden></div>
         </label>
-        <label class="fld" style="flex:1">② 비문/특성 스크린샷 (선택 · 참고용)
-          <div class="drop" id="d-insc">비문·특성 사진(있으면)
+        <label class="fld" style="flex:1">② 비문 스크린샷
+          <div class="drop" id="d-insc">게임 비문 화면 사진(있으면)<br><small>4슬롯 공격·방어·생명·전체피해를 자동 추출</small>
             <input type="file" id="f-insc" accept="image/*" hidden></div>
         </label>
       </div>
 
       <!-- 비문 수치 입력 → 카드로 재구성 -->
       <div class="insc-sec">
-        <div class="insc-sec-h">💠 비문 수치 입력 <span>(입력하면 아래처럼 통일된 패널로 자동 재구성됩니다)</span></div>
+        <div class="insc-sec-h">💠 비문 수치 <span>(사진 올리면 자동 추출 · 틀리면 직접 수정하세요)</span></div>
         <table class="insc-in">
-          <thead><tr><th>슬롯</th><th class="atk">공격 %</th><th class="def">방어 %</th><th class="hp">생명 %</th><th>특수 보너스</th></tr></thead>
+          <thead><tr><th>슬롯</th><th class="atk">공격 %</th><th class="def">방어 %</th><th class="hp">생명 %</th><th class="all">전체피해 %</th><th>특수 보너스</th></tr></thead>
           <tbody id="insc-body"></tbody>
         </table>
       </div>
@@ -286,7 +288,59 @@ const SUPABASE_URL = "https://dgplnukpxgwrwuwljlyv.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRncGxudWtweGd3cnd1d2xqbHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNzUwODcsImV4cCI6MjEwNjk1MTA4N30.Wy36x5lDnceBNqUWnkECWBQyQU98E8Z1d1lPO7g7jA0";
 const BUCKET="gear", TABLE="loadouts";
 const BUILDS=["궁병 1","궁병 2","궁병 3","기마 1","기마 2","기마 3","보병 1","보병 2","보병 3","리더십 1","리더십 2","리더십 3"];
-const INSC_SLOTS=["전령의 메시지","악기","깃발","표식"];
+const INSC_SLOTS=["전령의 메시지","전령의 악기","전령의 깃발","전령의 표식"];
+
+/* ===== RoK 지식베이스 + 사진 추출 파서 ===== */
+const ROK={
+  sets:["기사","늑대","드래곤 브레스","리바이벌","마녀","뱅가드","수확자","숲의 수호자","영광의 여신","영원한 제국","윈드스웹트","지옥의 황무지"],
+  setTroop:{"지옥의 황무지":"기마","영원한 제국":"보병","드래곤 브레스":"궁병"},
+  inscSlots:["전령의 메시지","전령의 악기","전령의 깃발","전령의 표식"],
+};
+function _norm(s){return (s||"").replace(/\s+/g,"");}
+function _statType(k){k=_norm(k);
+  if(k.indexOf("공격")>=0)return"atk"; if(k.indexOf("방어")>=0)return"def";
+  if(k.indexOf("생명")>=0||k.indexOf("체력")>=0)return"hp";
+  if(k.indexOf("전체피해")>=0||k.indexOf("모든피해")>=0||k.indexOf("전체데미지")>=0)return"all"; return null;}
+const _TROOPW=[["기병","기마"],["기마","기마"],["보병","보병"],["궁병","궁병"],["궁수","궁병"],["부대","부대"]];
+function _lineTroop(line){const n=_norm(line);for(const[w,t]of _TROOPW){if(n.indexOf(w)===0)return t;}return null;}
+const _STAT="(공격|방어|생명|체력|전체\\s*피해|모든\\s*피해|전체\\s*데미지)\\s*[:：]?\\s*\\+?\\s*([0-9]+(?:[.,][0-9]+)?)\\s*%";
+function parseRokOCR(raw){
+  const text=(raw||"").replace(/\r/g,"");
+  const lines=text.split("\n").map(s=>s.trim()).filter(Boolean);
+  const flat=_norm(text); let set="",troop="";
+  for(const s of ROK.sets){if(flat.indexOf(_norm(s))>=0){set=s;break;}}
+  if(set&&ROK.setTroop[set])troop=ROK.setTroop[set];
+  const inscStream=[],buffLines=[],troopStat={};
+  for(const line of lines){
+    let slotName=ROK.inscSlots.find(nm=>_norm(line).indexOf(_norm(nm))>=0)||((/(의\s*메시지|의\s*악기|의\s*깃발|의\s*표식|의\s*인장|의\s*문양)/.test(line))?line.trim():null);
+    if(slotName){inscStream.push({slot:slotName});continue;}
+    const tr=_lineTroop(line); const re=new RegExp(_STAT,"g"); let m,found=false;
+    while((m=re.exec(line))){found=true; const t=_statType(m[1]); if(!t)continue;
+      const v=parseFloat(m[2].replace(",","."));
+      if(tr){(troopStat[tr]=troopStat[tr]||{})[t]=v;} else {inscStream.push({t,v});}}
+    if(tr&&found)buffLines.push(line.trim());
+  }
+  const slots=[]; let cur=null;
+  const newSlot=name=>{cur={name:name||"",atk:0,def:0,hp:0,all:0,bonus:""};slots.push(cur);};
+  for(const it of inscStream){ if(it.slot!==undefined){newSlot(it.slot);continue;}
+    if(!cur||cur[it.t]){newSlot("");} cur[it.t]=it.v; }
+  const trimmed=slots.filter(s=>s.atk||s.def||s.hp||s.all).slice(0,4);
+  if(!troop){let best=null,bv=-1; for(const t of["기마","보병","궁병"]){const o=troopStat[t];if(!o)continue;
+    const sm=(o.atk||0)+(o.def||0)+(o.hp||0); if(sm>bv){bv=sm;best=t;}} if(best)troop=best;}
+  let commander="";
+  for(const line of lines.slice(0,8)){const n=line.trim();
+    if(!/[가-힣]/.test(n))continue; if(/[0-9%]/.test(n))continue; if(_statType(n))continue;
+    if(ROK.sets.some(s=>_norm(n).indexOf(_norm(s))>=0))continue;
+    if(/^(기병|기마|보병|궁병|궁수|부대|장비|비문|속성|세트|레벨|성급)/.test(_norm(n)))continue;
+    if(ROK.inscSlots.some(s=>_norm(n).indexOf(_norm(s))>=0))continue; if(n.length>12)continue;
+    commander=n;break;}
+  let buffs=buffLines.length?buffLines.join("\n"):"";
+  if(!buffs){const order=["궁병","기마","보병","부대"],parts=[];
+    for(const t of order){const o=troopStat[t];if(!o)continue;const seg=[];
+      if(o.atk)seg.push("공격 +"+o.atk+"%");if(o.def)seg.push("방어 +"+o.def+"%");if(o.hp)seg.push("생명 +"+o.hp+"%");
+      if(seg.length)parts.push("["+t+"] "+seg.join(" · "));} buffs=parts.join("\n");}
+  return {commander,set,troop,slots:trimmed,buffs};
+}
 
 /* ===== 상태 (TDZ 방지: 게이트보다 먼저 선언) ===== */
 let sb=null, DATA=null, FILES={eq:null,insc:null,extra:null}, STARS=6, OCRTEXT={};
@@ -321,6 +375,7 @@ function init(){
       <td><input type="number" step="0.1" id="i${i}-atk" placeholder="0"></td>
       <td><input type="number" step="0.1" id="i${i}-def" placeholder="0"></td>
       <td><input type="number" step="0.1" id="i${i}-hp" placeholder="0"></td>
+      <td><input type="number" step="0.1" id="i${i}-all" placeholder="0"></td>
       <td><input class="bn" id="i${i}-bn" placeholder="예: 연격 피해 +10%"></td>`;
     ib.appendChild(tr);
   });
@@ -336,6 +391,12 @@ function init(){
   const sp=document.getElementById("f-stars");
   function paint(){sp.querySelectorAll('span').forEach(s=>s.classList.toggle('on',+s.dataset.s<=STARS));}
   sp.querySelectorAll('span').forEach(s=>s.onclick=()=>{STARS=+s.dataset.s;paint();}); paint();
+
+  // 사용자가 직접 수정하면 자동채움 대상에서 제외
+  const manualIds=["f-cmd","f-set","f-troop","f-build","f-level","f-form","f-buffs"];
+  INSC_SLOTS.forEach((_,i)=>["nm","atk","def","hp","all"].forEach(k=>manualIds.push(`i${i}-${k}`)));
+  manualIds.forEach(id=>{const e=document.getElementById(id); if(!e)return;
+    const mark=()=>e.dataset.auto="0"; e.addEventListener("input",mark); e.addEventListener("change",mark);});
 
   setupDrop("d-eq","f-eq","eq",true);
   setupDrop("d-insc","f-insc","insc",true);
@@ -377,25 +438,38 @@ function pick(slot,drop,file,ocr){
 async function runOCR(slot,file){
   const stat=document.getElementById("ocrstat");
   if(typeof Tesseract==="undefined"){return;}
-  stat.innerHTML='<span class="spin"></span>사진 인식(OCR) 중…';
+  stat.innerHTML='<span class="spin"></span>사진에서 데이터 추출 중… (몇 초 걸립니다)';
   try{
     const {data:{text}}=await Tesseract.recognize(file,'kor+eng');
     OCRTEXT[slot]=cleanOCR(text);
-    // 비문/총버프 위주로 메모 채움 (장비 그리드는 아이콘뿐이라 제외)
-    const parts=[OCRTEXT.insc,OCRTEXT.extra].filter(Boolean);
-    const ta=document.getElementById("f-buffs");
-    const merged=parts.join("\n");
-    if(merged && (!ta.value.trim() || ta.dataset.auto==="1")){ ta.value=merged; ta.dataset.auto="1"; }
-    // 사령관명 추정(장비 스샷 상단 큰 글자)
-    if(slot==="eq" && !document.getElementById("f-cmd").value){
-      const guess=guessName(OCRTEXT.eq); if(guess) document.getElementById("f-cmd").value=guess;
-    }
-    stat.innerHTML='✅ 자동 인식 완료 (수정 가능)';
-  }catch(e){ stat.innerHTML='인식 생략'; }
+    const n=applyExtraction();
+    stat.innerHTML=n?`✅ 추출 완료 — ${n} · 값 확인 후 등록하세요`:'인식됨 — 수치는 직접 입력해 주세요';
+  }catch(e){ stat.innerHTML='인식 생략(수동 입력 가능)'; }
 }
 function cleanOCR(t){return (t||"").split("\n").map(l=>l.trim()).filter(l=>l && !/^[^\w가-힣%+\-.]+$/.test(l)).join("\n");}
-function guessName(t){if(!t)return"";const m=(t.split("\n").map(s=>s.trim()).filter(Boolean));
-  for(const l of m){ if(/[가-힣]/.test(l) && l.length<=12 && !/%|\+|레벨|Lv/i.test(l)) return l;} return "";}
+
+/* OCR 전체 텍스트를 RoK 파서로 분석해 폼에 자동 채움 */
+function allowAuto(el){return el && el.dataset.auto!=="0";}
+function autoSet(id,v){const el=document.getElementById(id); if(el&&allowAuto(el)&&v!==""&&v!=null&&v!==0){el.value=v;el.dataset.auto="1";}}
+function applyExtraction(){
+  const all=[OCRTEXT.eq,OCRTEXT.insc,OCRTEXT.extra].filter(Boolean).join("\n");
+  if(!all)return "";
+  const p=parseRokOCR(all); const got=[];
+  if(p.commander){autoSet("f-cmd",p.commander);got.push("사령관");}
+  if(p.set){autoSet("f-set",p.set);got.push("세트");}
+  if(p.troop){const tr=document.getElementById("f-troop"); if(allowAuto(tr)){tr.value=p.troop;tr.dataset.auto="1";got.push("병종");}
+    const fb=document.getElementById("f-build"); if(allowAuto(fb)&&[...fb.options].some(o=>o.value===p.troop+" 1")){fb.value=p.troop+" 1";fb.dataset.auto="1";}}
+  let sc=0;
+  p.slots.forEach((sl,i)=>{ if(i>3)return;
+    const nm=document.getElementById(`i${i}-nm`);
+    if(sl.name&&(allowAuto(nm)||INSC_SLOTS.includes(nm.value))){nm.value=sl.name;nm.dataset.auto="1";}
+    autoSet(`i${i}-atk`,sl.atk); autoSet(`i${i}-def`,sl.def); autoSet(`i${i}-hp`,sl.hp); autoSet(`i${i}-all`,sl.all);
+    if(sl.atk||sl.def||sl.hp||sl.all)sc++;
+  });
+  if(sc)got.push(`비문 ${sc}슬롯`);
+  if(p.buffs){const ta=document.getElementById("f-buffs"); if(allowAuto(ta)){ta.value=p.buffs;ta.dataset.auto="1";got.push("총버프");}}
+  return got.join(", ");
+}
 
 /* ===== 등록 ===== */
 async function submit(){
@@ -421,7 +495,7 @@ async function submit(){
     let extraUrl=null; if(FILES.extra) extraUrl=await up(FILES.extra,"extra");
     const num=id=>{const v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;};
     const insc=INSC_SLOTS.map((nm,i)=>({name:document.getElementById(`i${i}-nm`).value.trim()||nm,
-      atk:num(`i${i}-atk`),def:num(`i${i}-def`),hp:num(`i${i}-hp`),
+      atk:num(`i${i}-atk`),def:num(`i${i}-def`),hp:num(`i${i}-hp`),all:num(`i${i}-all`),
       bonus:document.getElementById(`i${i}-bn`).value.trim()}));
     const meta={v:2,
       name:document.getElementById("f-cmd").value.trim(),
@@ -440,11 +514,12 @@ async function submit(){
   btn.disabled=false;
 }
 function resetForm(){
-  ["f-nick","f-cmd","f-set","f-form","f-buffs"].forEach(id=>document.getElementById(id).value="");
+  ["f-nick","f-cmd","f-set","f-form","f-buffs"].forEach(id=>{const e=document.getElementById(id);e.value="";e.dataset.auto="";});
   document.getElementById("f-level").value=60; document.getElementById("f-exp").checked=false;
-  document.getElementById("f-buffs").dataset.auto=""; document.getElementById("ocrstat").textContent="";
+  ["f-troop","f-build"].forEach(id=>document.getElementById(id).dataset.auto="");
+  document.getElementById("ocrstat").textContent="";
   FILES={eq:null,insc:null,extra:null}; OCRTEXT={};
-  INSC_SLOTS.forEach((nm,i)=>{["atk","def","hp","bn"].forEach(k=>document.getElementById(`i${i}-${k}`).value="");document.getElementById(`i${i}-nm`).value=nm;});
+  INSC_SLOTS.forEach((nm,i)=>{["atk","def","hp","all","bn"].forEach(k=>{const e=document.getElementById(`i${i}-${k}`);e.value="";e.dataset.auto="";});const n=document.getElementById(`i${i}-nm`);n.value=nm;n.dataset.auto="";});
   ["d-eq","d-insc","d-extra"].forEach(id=>{const d=document.getElementById(id);d.classList.remove("has");const pv=d.querySelector(".pv");if(pv)pv.remove();});
 }
 function say(el,t,c){el.innerHTML=t;el.className="msg "+(c||"");}
@@ -496,16 +571,17 @@ function card(r){
   const buffsHtml=m.buffs?`<div class="cmd-buffs"><div class="buffs-h">📊 버프 / 요약</div><div class="buffs-b">${hl(m.buffs)}</div></div>`:"";
 
   // 비문: 수치 입력이 있으면 재구성 패널, 없으면 원본 사진으로 폴백
-  const inscData=(m.insc||[]).filter(s=>s.atk||s.def||s.hp||(s.bonus&&s.bonus.trim()));
+  const inscData=(m.insc||[]).filter(s=>s.atk||s.def||s.hp||s.all||(s.bonus&&s.bonus.trim()));
   let inscPanel;
   if(inscData.length){
     inscPanel=`<div class="insc-panel"><div class="ph">💠 비문</div>`+
       m.insc.map(s=>{
-        const has=s.atk||s.def||s.hp||(s.bonus&&s.bonus.trim());
+        const has=s.atk||s.def||s.hp||s.all||(s.bonus&&s.bonus.trim());
         if(!has) return "";
-        const st=[s.atk?`<b class="a">공 +${s.atk}%</b>`:"",
-                  s.def?`<b class="d">방 +${s.def}%</b>`:"",
-                  s.hp?`<b class="h">체 +${s.hp}%</b>`:""].filter(Boolean).join("");
+        const st=[s.atk?`<b class="a">공격 +${s.atk}%</b>`:"",
+                  s.def?`<b class="d">방어 +${s.def}%</b>`:"",
+                  s.hp?`<b class="h">생명 +${s.hp}%</b>`:"",
+                  s.all?`<b class="al">전체피해 +${s.all}%</b>`:""].filter(Boolean).join("");
         return `<div class="insc-slot"><div class="nm">${esc(s.name)}</div>`+
                (st?`<div class="st">${st}</div>`:"")+
                (s.bonus&&s.bonus.trim()?`<div class="bn">${hl(s.bonus)}</div>`:"")+`</div>`;
