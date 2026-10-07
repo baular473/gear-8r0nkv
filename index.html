@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>강철손 장비·비문 모음</title>
+<style>
+  :root{--bg:#0f1420;--card:#171e2e;--line:#283347;--txt:#e6ebf5;--mut:#8b97ad;
+        --accent:#4f8cff;--green:#2ec27e;--red:#ff5d6c;--amber:#ffb020;--head:#1f2a40;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.5 "Segoe UI",system-ui,sans-serif;}
+  header{padding:18px 24px;background:linear-gradient(90deg,#17233c,#141a28);border-bottom:1px solid var(--line);}
+  h1{margin:0;font-size:20px;}
+  .sub{color:var(--mut);font-size:12px;margin-top:4px;}
+  .sub a{color:#9fd0ff;text-decoration:none;}
+  .wrap{padding:18px 24px;max-width:1500px;margin:0 auto;}
+  .tabs{display:flex;gap:8px;margin:14px 0;}
+  .tab{padding:8px 16px;border:1px solid var(--line);border-radius:9px;cursor:pointer;background:var(--card);color:var(--mut);}
+  .tab.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+  input,select,textarea{background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:13px;}
+  input::placeholder{color:var(--mut);}
+  label.fld{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mut);}
+  .form{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;max-width:560px;}
+  .form .row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+  .form .row > *{flex:1;min-width:160px;}
+  .drop{border:2px dashed var(--line);border-radius:10px;padding:14px;text-align:center;cursor:pointer;color:var(--mut);background:#0e1626;}
+  .drop.has{border-color:var(--green);color:var(--txt);}
+  .drop img{max-width:100%;max-height:200px;border-radius:8px;margin-top:8px;}
+  button.go{width:100%;padding:12px;border:0;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;font-size:15px;}
+  button.go:disabled{opacity:.5;cursor:default;}
+  .msg{margin-top:12px;font-size:13px;min-height:18px;}
+  .msg.ok{color:var(--green);} .msg.err{color:var(--red);}
+  .govsec{margin:22px 0;}
+  .govsec h3{margin:0 0 10px;font-size:16px;border-left:4px solid var(--accent);padding-left:10px;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .card .ct{padding:9px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);}
+  .badge{background:#223052;color:#9fd0ff;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;}
+  .card .cmd{color:var(--mut);font-size:12px;}
+  .imgs{display:flex;}
+  .imgs figure{margin:0;flex:1;}
+  .imgs img{width:100%;height:150px;object-fit:cover;cursor:zoom-in;display:block;}
+  .imgs figcaption{font-size:11px;color:var(--mut);text-align:center;padding:3px;background:#0e1626;}
+  .date{font-size:11px;color:var(--mut);padding:6px 12px;}
+  .by{margin-top:18px;padding-top:12px;border-top:1px solid var(--line);text-align:center;color:var(--mut);font-size:12px;}
+  .by b{color:#9fd0ff;}
+  #lb{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:900;cursor:zoom-out;}
+  #lb img{max-width:95vw;max-height:95vh;border-radius:8px;}
+  /* gate */
+  #gate{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;}
+  .gatebox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px 26px;width:min(360px,90vw);text-align:center;}
+  .gatebox h2{margin:0 0 6px;font-size:18px;}
+  .gatebox p{color:var(--mut);font-size:12px;margin:0 0 16px;}
+  .gatebox input{width:100%;text-align:center;letter-spacing:2px;margin-bottom:10px;padding:11px;}
+  .gatebox button{width:100%;padding:11px;border:0;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;}
+  .gateerr{color:var(--red);font-size:12px;height:16px;margin-top:8px;}
+  body.locked{overflow:hidden;}
+</style>
+</head>
+<body class="locked">
+<div id="gate">
+  <div class="gatebox">
+    <h2>🔒 강철손 장비·비문</h2>
+    <p>비밀번호를 입력하세요</p>
+    <input id="gpw" type="password" placeholder="비밀번호" autocomplete="off">
+    <button id="gbtn">입장</button>
+    <div class="gateerr" id="gerr"></div>
+  </div>
+</div>
+
+<header>
+  <h1>🛡️ 강철손 장비·비문 모음</h1>
+  <div class="sub"><a href="https://baular473.github.io/broll-pa7tlu/">← 브롤 추적 홈피</a> · made by <b style="color:#9fd0ff">Huni</b></div>
+</header>
+
+<div class="wrap">
+  <div class="tabs">
+    <div class="tab on" data-v="list">🖼️ 모음</div>
+    <div class="tab" data-v="add">➕ 등록</div>
+  </div>
+
+  <!-- 갤러리 -->
+  <div id="view-list">
+    <div class="bar">
+      <input id="q" placeholder="🔍 닉네임 검색" style="width:200px">
+      <select id="fbuild"><option value="">전체 빌드</option></select>
+      <span class="sub" id="cnt"></span>
+    </div>
+    <div id="gallery"></div>
+  </div>
+
+  <!-- 등록 -->
+  <div id="view-add" style="display:none">
+    <div class="form">
+      <div class="row">
+        <label class="fld">닉네임
+          <input id="f-nick" placeholder="게임 내 닉네임" maxlength="40">
+        </label>
+        <label class="fld">빌드
+          <select id="f-build"></select>
+        </label>
+      </div>
+      <div class="row">
+        <label class="fld" style="flex:1">사령관 (선택)
+          <input id="f-cmd" placeholder="예: 이반 4세" maxlength="40">
+        </label>
+      </div>
+      <div class="row">
+        <label class="fld" style="flex:1">① 장비 스크린샷
+          <div class="drop" id="d-eq">장비 그리드 사진 선택/드래그
+            <input type="file" id="f-eq" accept="image/*" hidden>
+          </div>
+        </label>
+        <label class="fld" style="flex:1">② 비문/특성 스크린샷
+          <div class="drop" id="d-insc">비문·특성 사진 선택/드래그
+            <input type="file" id="f-insc" accept="image/*" hidden>
+          </div>
+        </label>
+      </div>
+      <button class="go" id="submit">등록하기</button>
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+
+  <div class="by">🛡️ 강철손 장비·비문 모음 · made by <b>Huni</b></div>
+</div>
+
+<div id="lb"><img id="lbimg" src=""></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ================== 설정 (Supabase 연결값) ================== */
+const SUPABASE_URL = "https://dgplnukpxgwrwuwljlyv.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRncGxudWtweGd3cnd1d2xqbHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNzUwODcsImV4cCI6MjEwNjk1MTA4N30.Wy36x5lDnceBNqUWnkECWBQyQU98E8Z1d1lPO7g7jA0";
+const BUCKET = "gear";
+const TABLE = "loadouts";
+const BUILDS = ["궁병 1","궁병 2","궁병 3","기마 1","기마 2","기마 3",
+                "보병 1","보병 2","보병 3","리더십 1","리더십 2","리더십 3"];
+
+/* ================== 비밀번호 게이트 ================== */
+(function(){
+  const HASH="953510b1f35f67f9b52d3269027222aa5c22f5c2aa363ac771ad25daa920c054";
+  const KEY="broll_gate_ok";
+  async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));
+    return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+  function open(){document.getElementById("gate").style.display="none";document.body.classList.remove("locked");init();}
+  if(sessionStorage.getItem(KEY)==="1"||localStorage.getItem(KEY)==="1"){open();return;}
+  const inp=document.getElementById("gpw"),btn=document.getElementById("gbtn"),err=document.getElementById("gerr");
+  async function tryIn(){const h=await sha(inp.value);
+    if(h===HASH){sessionStorage.setItem(KEY,"1");localStorage.setItem(KEY,"1");open();}
+    else{err.textContent="비밀번호가 틀렸습니다";inp.value="";inp.focus();}}
+  btn.onclick=tryIn; inp.addEventListener("keydown",e=>{if(e.key==="Enter")tryIn();}); inp.focus();
+})();
+
+/* ================== 메인 ================== */
+let sb=null;
+function init(){
+  // 빌드 셀렉트 채우기
+  const fb=document.getElementById("f-build"), ff=document.getElementById("fbuild");
+  BUILDS.forEach(b=>{fb.appendChild(new Option(b,b)); ff.appendChild(new Option(b,b));});
+
+  // 탭
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on');
+    document.getElementById('view-list').style.display=t.dataset.v==='list'?'':'none';
+    document.getElementById('view-add').style.display=t.dataset.v==='add'?'':'none';
+    if(t.dataset.v==='list') loadGallery();
+  });
+
+  // 드롭존
+  setupDrop("d-eq","f-eq","eq"); setupDrop("d-insc","f-insc","insc");
+  document.getElementById("submit").onclick=submit;
+  document.getElementById("q").oninput=renderGallery;
+  document.getElementById("fbuild").onchange=renderGallery;
+
+  // 라이트박스
+  const lb=document.getElementById("lb");
+  lb.onclick=()=>lb.style.display="none";
+
+  if(SUPABASE_URL.startsWith("__")){
+    document.getElementById("gallery").innerHTML=
+      '<p style="color:#ffb020">⚠️ Supabase 연결값이 아직 설정되지 않았습니다. (관리자: SUPABASE_URL / ANON_KEY 입력 필요)</p>';
+    return;
+  }
+  sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  loadGallery();
+}
+
+let FILES={eq:null,insc:null};
+function setupDrop(dropId,inputId,slot){
+  const drop=document.getElementById(dropId), input=document.getElementById(inputId);
+  drop.onclick=()=>input.click();
+  input.onchange=()=>pick(slot,drop,input.files[0]);
+  drop.ondragover=e=>{e.preventDefault();drop.classList.add('has');};
+  drop.ondragleave=()=>{if(!FILES[slot])drop.classList.remove('has');};
+  drop.ondrop=e=>{e.preventDefault();const f=e.dataTransfer.files[0];
+    if(f){try{input.files=e.dataTransfer.files;}catch(_){ } pick(slot,drop,f);}};
+}
+function pick(slot,drop,file){
+  if(!file)return;
+  FILES[slot]=file;
+  drop.classList.add('has');
+  let pv=drop.querySelector('.pv');
+  if(!pv){pv=document.createElement('div');pv.className='pv';drop.appendChild(pv);}
+  pv.innerHTML=`선택됨: ${file.name}<br><img src="${URL.createObjectURL(file)}">`;
+}
+function resetDrop(dropId,slot){
+  FILES[slot]=null;
+  const drop=document.getElementById(dropId);
+  drop.classList.remove('has');
+  const pv=drop.querySelector('.pv'); if(pv)pv.remove();
+}
+
+async function submit(){
+  const msg=document.getElementById("msg");
+  const nick=document.getElementById("f-nick").value.trim();
+  const build=document.getElementById("f-build").value;
+  const cmd=document.getElementById("f-cmd").value.trim();
+  const eq=FILES.eq;
+  const insc=FILES.insc;
+  if(!nick){return say(msg,"닉네임을 입력하세요","err");}
+  if(!eq||!insc){return say(msg,"사진 2장(장비·비문)을 모두 올려주세요","err");}
+  if(!sb){return say(msg,"Supabase 미설정","err");}
+  const btn=document.getElementById("submit");btn.disabled=true;say(msg,"업로드 중…","");
+  try{
+    const stamp=Date.now();
+    const safe=nick.replace(/[^\w가-힣]/g,"_");
+    const p1=`${safe}/${stamp}_eq.jpg`, p2=`${safe}/${stamp}_insc.jpg`;
+    const u1=await sb.storage.from(BUCKET).upload(p1,eq,{upsert:false,contentType:eq.type});
+    if(u1.error)throw u1.error;
+    const u2=await sb.storage.from(BUCKET).upload(p2,insc,{upsert:false,contentType:insc.type});
+    if(u2.error)throw u2.error;
+    const eqUrl=sb.storage.from(BUCKET).getPublicUrl(p1).data.publicUrl;
+    const inscUrl=sb.storage.from(BUCKET).getPublicUrl(p2).data.publicUrl;
+    const ins=await sb.from(TABLE).insert({nickname:nick,build:build,commander:cmd||null,
+      eq_url:eqUrl,insc_url:inscUrl});
+    if(ins.error)throw ins.error;
+    say(msg,"✅ 등록 완료! '모음' 탭에서 확인하세요.","ok");
+    document.getElementById("f-nick").value="";document.getElementById("f-cmd").value="";
+    document.getElementById("f-eq").value="";document.getElementById("f-insc").value="";
+    resetDrop("d-eq","eq");resetDrop("d-insc","insc");
+    DATA=null;
+  }catch(e){say(msg,"오류: "+(e.message||e),"err");}
+  btn.disabled=false;
+}
+function say(el,t,c){el.textContent=t;el.className="msg "+(c||"");}
+
+let DATA=null;
+async function loadGallery(){
+  if(!sb)return;
+  if(!DATA){
+    const {data,error}=await sb.from(TABLE).select("*").order("nickname").order("build");
+    if(error){document.getElementById("gallery").innerHTML="<p style='color:#ff5d6c'>불러오기 오류: "+error.message+"</p>";return;}
+    DATA=data||[];
+  }
+  renderGallery();
+}
+function renderGallery(){
+  if(!DATA)return;
+  const q=document.getElementById("q").value.trim().toLowerCase();
+  const fb=document.getElementById("fbuild").value;
+  let rows=DATA.filter(r=>(!q||r.nickname.toLowerCase().includes(q))&&(!fb||r.build===fb));
+  document.getElementById("cnt").textContent=`총 ${rows.length}개 · 인원 ${new Set(rows.map(r=>r.nickname)).size}명`;
+  const byNick={};
+  rows.forEach(r=>{(byNick[r.nickname]=byNick[r.nickname]||[]).push(r);});
+  const nicks=Object.keys(byNick).sort((a,b)=>a.localeCompare(b,'ko'));
+  let html="";
+  if(!nicks.length){html="<p style='color:#8b97ad'>아직 등록된 장비·비문이 없습니다. '등록' 탭에서 올려보세요.</p>";}
+  nicks.forEach(nk=>{
+    html+=`<div class="govsec"><h3>${esc(nk)} <span class="sub">(${byNick[nk].length})</span></h3><div class="cards">`;
+    byNick[nk].sort((a,b)=>BUILDS.indexOf(a.build)-BUILDS.indexOf(b.build));
+    byNick[nk].forEach(r=>{
+      const dt=r.created_at?new Date(r.created_at).toLocaleDateString('ko-KR'):"";
+      html+=`<div class="card">
+        <div class="ct"><span class="badge">${esc(r.build)}</span>
+          <span class="cmd">${r.commander?esc(r.commander):""}</span></div>
+        <div class="imgs">
+          <figure><img src="${r.eq_url}" onclick="zoom(this.src)"><figcaption>장비</figcaption></figure>
+          <figure><img src="${r.insc_url}" onclick="zoom(this.src)"><figcaption>비문</figcaption></figure>
+        </div>
+        <div class="date">${dt}</div></div>`;
+    });
+    html+="</div></div>";
+  });
+  document.getElementById("gallery").innerHTML=html;
+}
+function zoom(src){const lb=document.getElementById("lb");document.getElementById("lbimg").src=src;lb.style.display="flex";}
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+</script>
+</body>
+</html>
