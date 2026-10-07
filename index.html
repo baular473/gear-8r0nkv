@@ -64,8 +64,11 @@
   .govsec h3 .ct{color:var(--mut);font-size:12px;font-weight:500;}
   .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(430px,1fr));gap:18px;}
 
-  .cmd{background:linear-gradient(180deg,#141c33,#10172c);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  .cmd{position:relative;background:linear-gradient(180deg,#141c33,#10172c);border:1px solid var(--line);border-radius:16px;overflow:hidden;
        box-shadow:0 8px 30px rgba(0,0,0,.35);}
+  .del-btn{position:absolute;top:8px;right:8px;z-index:3;width:26px;height:26px;border-radius:8px;border:1px solid var(--line);
+           background:rgba(20,27,48,.85);color:#8a97b2;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;transition:.12s;}
+  .del-btn:hover{background:rgba(255,107,107,.9);color:#fff;border-color:transparent;}
   .cmd-head{display:flex;align-items:center;gap:12px;padding:13px 15px;background:linear-gradient(90deg,#1a2murky,#141d38);
             background:linear-gradient(90deg,#1b2banner,#141d38);background:linear-gradient(90deg,#1a243f,#131b32);border-bottom:1px solid var(--line);}
   .portrait{width:52px;height:52px;border-radius:12px;border:2px solid var(--gold);overflow:hidden;flex:0 0 auto;background:#0d1526;}
@@ -260,6 +263,20 @@
 
 <div id="lb"><img id="lbimg" src=""></div>
 
+<!-- 삭제 확인 모달 -->
+<div id="delmodal" style="position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;">
+  <div class="gatebox" style="width:min(340px,90vw)">
+    <h2>🗑️ <span class="g">항목 삭제</span></h2>
+    <p id="deltarget">이 등록을 삭제합니다. 비밀번호를 입력하세요.</p>
+    <input id="delpw" type="password" placeholder="삭제 비밀번호" autocomplete="off">
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button id="delcancel" style="background:#263150;color:#e8edf7">취소</button>
+      <button id="delok" style="background:linear-gradient(90deg,#ff6b6b,#ff9a6b)">삭제</button>
+    </div>
+    <div class="gateerr" id="delerr"></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
@@ -272,6 +289,8 @@ const INSC_SLOTS=["전령의 메시지","악기","깃발","표식"];
 
 /* ===== 상태 (TDZ 방지: 게이트보다 먼저 선언) ===== */
 let sb=null, DATA=null, FILES={eq:null,insc:null,extra:null}, STARS=6, OCRTEXT={};
+let DEL_ID=null, DEL_OK=false;
+const DEL_HASH="c064c684bf01b2edaaa30c881c6d207043b5fe1b65163b55589cf73d0641b1ed";
 
 /* ===== 비밀번호 게이트 ===== */
 (function(){
@@ -325,6 +344,13 @@ function init(){
   document.getElementById("ftroop").onchange=renderGallery;
   document.getElementById("fbuild").onchange=renderGallery;
   const lb=document.getElementById("lb"); lb.onclick=()=>lb.style.display="none";
+
+  // 삭제 모달
+  const dm=document.getElementById("delmodal");
+  document.getElementById("delcancel").onclick=closeDel;
+  dm.onclick=e=>{if(e.target===dm)closeDel();};
+  document.getElementById("delok").onclick=confirmDel;
+  document.getElementById("delpw").addEventListener("keydown",e=>{if(e.key==="Enter")confirmDel();});
 
   if(SUPABASE_URL.startsWith("__")){document.getElementById("gallery").innerHTML='<p class="empty">⚠️ Supabase 미설정</p>';return;}
   sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
@@ -437,7 +463,7 @@ function parseRow(r){
   try{const o=JSON.parse(r.commander); if(o&&o.v===2){m={...m,...o};}
       else if(typeof r.commander==="string"&&!r.commander.startsWith("{")) m.name=r.commander;}
   catch(_){ if(r.commander&&!r.commander.startsWith("{")) m.name=r.commander; }
-  return {...r,meta:m,_junk:(r.commander&&r.commander.includes("PSPath"))||r.nickname==="__TEST__"};
+  return {...r,meta:m,_junk:(r.commander&&r.commander.includes("PSPath"))||r.nickname==="__TEST__"||r.nickname==="__DELTEST__"};
 }
 function renderGallery(){
   if(!DATA)return;
@@ -497,6 +523,7 @@ function card(r){
   if(refs.length) refRow=`<details class="refs"><summary>📎 원본 사진 보기 (${refs.length})</summary><div class="ref-row">${refs.join("")}</div></details>`;
 
   return `<div class="cmd">
+    <button class="del-btn" title="삭제" onclick="askDelete('${r.id}')">🗑</button>
     <div class="cmd-head">
       <div class="portrait"><img src="${r.eq_url}" alt=""></div>
       <div class="cmd-id">
@@ -519,6 +546,43 @@ function card(r){
   </div>`;
 }
 function zoom(src){const lb=document.getElementById("lb");document.getElementById("lbimg").src=src;lb.style.display="flex";}
+
+/* ===== 삭제 ===== */
+function askDelete(id){
+  DEL_ID=id;
+  const r=(DATA||[]).find(x=>x.id===id);
+  document.getElementById("deltarget").innerHTML=r?`<b style="color:#ffd27a">${esc(r.nickname)} · ${esc(r.build)}</b> 등록을 삭제합니다.<br>비밀번호를 입력하세요.`:"이 등록을 삭제합니다.";
+  document.getElementById("delerr").textContent="";
+  const pw=document.getElementById("delpw"); pw.value="";
+  document.getElementById("delmodal").style.display="flex";
+  if(!DEL_OK) setTimeout(()=>pw.focus(),30);
+}
+function closeDel(){document.getElementById("delmodal").style.display="none";DEL_ID=null;}
+async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+async function confirmDel(){
+  const err=document.getElementById("delerr"), pw=document.getElementById("delpw");
+  if(!DEL_OK){
+    const h=await sha(pw.value);
+    if(h!==DEL_HASH){err.textContent="비밀번호가 틀렸습니다";pw.value="";pw.focus();return;}
+    DEL_OK=true; // 세션 동안 재입력 생략
+  }
+  const id=DEL_ID; const r=(DATA||[]).find(x=>x.id===id);
+  err.innerHTML='<span class="spin"></span>삭제 중…'; err.style.color="var(--gold2)";
+  try{
+    // 스토리지 파일 best-effort 삭제
+    const urls=[r&&r.eq_url, r&&r.insc_url, r&&r.meta&&r.meta.extraUrl].filter(Boolean);
+    const paths=urls.map(storagePath).filter(Boolean);
+    if(paths.length){try{await sb.storage.from(BUCKET).remove(paths);}catch(_){}}
+    // 행 삭제 + 실제 반영 확인
+    const {error}=await sb.from(TABLE).delete().eq("id",id);
+    if(error)throw error;
+    const {data:still}=await sb.from(TABLE).select("id").eq("id",id);
+    if(still&&still.length){throw new Error("권한 없음(RLS). Supabase에 삭제 정책을 추가해야 합니다.");}
+    closeDel(); DATA=null; await loadGallery();
+  }catch(e){ err.style.color="var(--atk)"; err.textContent="삭제 실패: "+(e.message||e); }
+}
+function storagePath(url){const i=(url||"").indexOf("/object/public/"+BUCKET+"/");return i<0?null:decodeURIComponent(url.slice(i+("/object/public/"+BUCKET+"/").length));}
 function esc(s){return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 </script>
 </body>
