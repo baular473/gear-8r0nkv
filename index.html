@@ -45,6 +45,18 @@
   .msg.ok{color:var(--hp);} .msg.err{color:var(--atk);} .msg.wait{color:var(--gold2);}
   .ocrbox{font-size:11px;color:var(--mut);margin-top:4px;}
 
+  /* 비문 수치 입력 */
+  .insc-sec{margin-bottom:14px;}
+  .insc-sec-h{font-size:12px;color:var(--gold2);font-weight:700;margin-bottom:8px;}
+  .insc-sec-h span{color:var(--mut);font-weight:500;}
+  table.insc-in{width:100%;border-collapse:collapse;font-size:12px;}
+  table.insc-in th{color:var(--mut);font-weight:700;text-align:center;padding:5px 4px;border-bottom:1px solid var(--line);font-size:11px;}
+  table.insc-in th.atk{color:var(--atk);} table.insc-in th.def{color:var(--def);} table.insc-in th.hp{color:var(--hp);}
+  table.insc-in td{padding:5px 4px;}
+  table.insc-in td.slot{color:var(--gold2);font-weight:700;white-space:nowrap;font-size:11.5px;}
+  table.insc-in input{width:100%;padding:7px 6px;text-align:center;}
+  table.insc-in input.bn{text-align:left;}
+
   /* 갤러리 */
   .govsec{margin:10px 0 26px;}
   .govsec h3{margin:0 0 12px;font-size:17px;display:flex;align-items:center;gap:9px;}
@@ -70,11 +82,37 @@
   .bdg.set{background:#3a2a16;color:var(--gold2);}
   .cmd-date{font-size:11px;color:var(--mut);text-align:right;flex:0 0 auto;}
 
-  .cmd-body{display:flex;gap:10px;padding:12px 14px;}
+  .cmd-body{display:flex;gap:12px;padding:12px 14px;align-items:stretch;}
+  /* 통일된 세로 장비 틀 */
+  .eqframe{flex:0 0 42%;margin:0;background:#0a1120;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+           aspect-ratio:4/5;position:relative;}
+  .eqframe img{width:100%;height:100%;object-fit:contain;background:#0a1120;cursor:zoom-in;display:block;}
+  .eqframe figcaption{position:absolute;left:0;right:0;bottom:0;font-size:10px;color:var(--mut);text-align:center;
+                      padding:4px;background:linear-gradient(0deg,rgba(10,17,32,.95),rgba(10,17,32,0));font-weight:600;}
+
+  /* 재구성된 비문 패널 (레퍼런스 스타일) */
+  .insc-panel{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
+  .insc-panel .ph{font-size:11px;color:var(--gold2);font-weight:700;letter-spacing:.5px;text-align:center;margin-bottom:1px;}
+  .insc-slot{background:linear-gradient(180deg,#111a2f,#0d1526);border:1px solid var(--line);border-radius:9px;padding:7px 9px;}
+  .insc-slot .nm{font-size:11px;font-weight:700;color:var(--gold2);margin-bottom:4px;}
+  .insc-slot .st{display:flex;gap:6px;flex-wrap:wrap;}
+  .insc-slot .st b{font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;}
+  .insc-slot .st b.a{background:rgba(255,107,107,.14);color:var(--atk);}
+  .insc-slot .st b.d{background:rgba(91,179,255,.14);color:var(--def);}
+  .insc-slot .st b.h{background:rgba(79,212,138,.14);color:var(--hp);}
+  .insc-slot .bn{font-size:10.5px;color:#c7d2e6;margin-top:4px;line-height:1.4;}
+  .insc-slot .bn .p{color:var(--delta);font-weight:700;}
+
+  /* 참고용 원본 사진 (접기) */
   .fig{flex:1;margin:0;background:#0d1526;border:1px solid var(--line);border-radius:11px;overflow:hidden;}
   .fig img{width:100%;height:210px;object-fit:contain;background:#0a1120;cursor:zoom-in;display:block;}
   .fig figcaption{font-size:11px;color:var(--mut);text-align:center;padding:5px;background:#111a2d;font-weight:600;}
   .fig .fl{font-size:10px;color:var(--gold2);text-align:center;padding:3px;background:#141d33;}
+  .ref-row{display:flex;gap:10px;padding:0 14px 12px;}
+  .ref-row .fig img{height:150px;}
+  details.refs{padding:0 14px 10px;}
+  details.refs summary{cursor:pointer;color:var(--mut);font-size:11px;font-weight:600;outline:none;}
+  @media(max-width:520px){.cmd-body{flex-direction:column;}.eqframe{flex:none;width:100%;aspect-ratio:16/10;}}
 
   .cmd-buffs{padding:4px 15px 15px;}
   .buffs-h{font-size:12px;color:var(--gold2);font-weight:700;letter-spacing:1px;text-align:center;
@@ -186,11 +224,21 @@
           <div class="drop" id="d-eq">장비 그리드 사진 선택/드래그
             <input type="file" id="f-eq" accept="image/*" hidden></div>
         </label>
-        <label class="fld" style="flex:1">② 비문/특성 스크린샷 *
-          <div class="drop" id="d-insc">비문·특성 사진 선택/드래그
+        <label class="fld" style="flex:1">② 비문/특성 스크린샷 (선택 · 참고용)
+          <div class="drop" id="d-insc">비문·특성 사진(있으면)
             <input type="file" id="f-insc" accept="image/*" hidden></div>
         </label>
       </div>
+
+      <!-- 비문 수치 입력 → 카드로 재구성 -->
+      <div class="insc-sec">
+        <div class="insc-sec-h">💠 비문 수치 입력 <span>(입력하면 아래처럼 통일된 패널로 자동 재구성됩니다)</span></div>
+        <table class="insc-in">
+          <thead><tr><th>슬롯</th><th class="atk">공격 %</th><th class="def">방어 %</th><th class="hp">생명 %</th><th>특수 보너스</th></tr></thead>
+          <tbody id="insc-body"></tbody>
+        </table>
+      </div>
+
       <div class="row">
         <label class="fld" style="flex:1">③ 총버프 스크린샷 (선택)
           <div class="drop" id="d-extra">총버프 요약 사진(있으면)
@@ -220,6 +268,7 @@ const SUPABASE_URL = "https://dgplnukpxgwrwuwljlyv.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRncGxudWtweGd3cnd1d2xqbHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNzUwODcsImV4cCI6MjEwNjk1MTA4N30.Wy36x5lDnceBNqUWnkECWBQyQU98E8Z1d1lPO7g7jA0";
 const BUCKET="gear", TABLE="loadouts";
 const BUILDS=["궁병 1","궁병 2","궁병 3","기마 1","기마 2","기마 3","보병 1","보병 2","보병 3","리더십 1","리더십 2","리더십 3"];
+const INSC_SLOTS=["전령의 메시지","악기","깃발","표식"];
 
 /* ===== 상태 (TDZ 방지: 게이트보다 먼저 선언) ===== */
 let sb=null, DATA=null, FILES={eq:null,insc:null,extra:null}, STARS=6, OCRTEXT={};
@@ -243,6 +292,18 @@ function init(){
   const fb=document.getElementById("f-build"), ff=document.getElementById("fbuild");
   BUILDS.forEach(b=>{fb.appendChild(new Option(b,b)); ff.appendChild(new Option(b,b));});
   document.getElementById("f-build").value="기마 1";
+
+  // 비문 수치 입력폼 생성
+  const ib=document.getElementById("insc-body");
+  INSC_SLOTS.forEach((nm,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="slot">${nm}</td>
+      <td><input type="number" step="0.1" id="i${i}-atk" placeholder="0"></td>
+      <td><input type="number" step="0.1" id="i${i}-def" placeholder="0"></td>
+      <td><input type="number" step="0.1" id="i${i}-hp" placeholder="0"></td>
+      <td><input class="bn" id="i${i}-bn" placeholder="예: 연격 피해 +10%"></td>`;
+    ib.appendChild(tr);
+  });
 
   document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); t.classList.add('on');
@@ -315,7 +376,7 @@ async function submit(){
   const nick=document.getElementById("f-nick").value.trim();
   const build=document.getElementById("f-build").value;
   if(!nick) return say(msg,"닉네임을 입력하세요","err");
-  if(!FILES.eq||!FILES.insc) return say(msg,"장비·비문 사진 2장은 필수입니다","err");
+  if(!FILES.eq) return say(msg,"장비 스크린샷은 필수입니다","err");
   if(!sb) return say(msg,"Supabase 미설정","err");
   const btn=document.getElementById("submit"); btn.disabled=true;
   say(msg,'<span class="spin"></span>업로드 중…',"wait");
@@ -328,8 +389,13 @@ async function submit(){
       const r=await sb.storage.from(BUCKET).upload(p,file,{upsert:false,contentType:file.type}); if(r.error)throw r.error;
       return sb.storage.from(BUCKET).getPublicUrl(p).data.publicUrl;
     };
-    const eqUrl=await up(FILES.eq,"eq"), inscUrl=await up(FILES.insc,"insc");
+    const eqUrl=await up(FILES.eq,"eq");
+    let inscUrl=""; if(FILES.insc) inscUrl=await up(FILES.insc,"insc");
     let extraUrl=null; if(FILES.extra) extraUrl=await up(FILES.extra,"extra");
+    const num=id=>{const v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;};
+    const insc=INSC_SLOTS.map((nm,i)=>({name:nm,
+      atk:num(`i${i}-atk`),def:num(`i${i}-def`),hp:num(`i${i}-hp`),
+      bonus:document.getElementById(`i${i}-bn`).value.trim()}));
     const meta={v:2,
       name:document.getElementById("f-cmd").value.trim(),
       level:+document.getElementById("f-level").value||60,
@@ -338,7 +404,7 @@ async function submit(){
       set:document.getElementById("f-set").value.trim(),
       formation:document.getElementById("f-form").value.trim(),
       buffs:document.getElementById("f-buffs").value.trim(),
-      extraUrl};
+      insc, extraUrl};
     const ins=await sb.from(TABLE).insert({nickname:nick,build,commander:JSON.stringify(meta),eq_url:eqUrl,insc_url:inscUrl});
     if(ins.error)throw ins.error;
     say(msg,"✅ 등록 완료! '모음' 탭에서 분석 카드를 확인하세요.","ok");
@@ -351,6 +417,7 @@ function resetForm(){
   document.getElementById("f-level").value=60; document.getElementById("f-exp").checked=false;
   document.getElementById("f-buffs").dataset.auto=""; document.getElementById("ocrstat").textContent="";
   FILES={eq:null,insc:null,extra:null}; OCRTEXT={};
+  INSC_SLOTS.forEach((_,i)=>["atk","def","hp","bn"].forEach(k=>document.getElementById(`i${i}-${k}`).value=""));
   ["d-eq","d-insc","d-extra"].forEach(id=>{const d=document.getElementById(id);d.classList.remove("has");const pv=d.querySelector(".pv");if(pv)pv.remove();});
 }
 function say(el,t,c){el.innerHTML=t;el.className="msg "+(c||"");}
@@ -366,7 +433,7 @@ async function loadGallery(){
   renderGallery();
 }
 function parseRow(r){
-  let m={name:"",level:60,stars:6,exp:false,troop:"",set:"",formation:"",buffs:"",extraUrl:null};
+  let m={name:"",level:60,stars:6,exp:false,troop:"",set:"",formation:"",buffs:"",insc:[],extraUrl:null};
   try{const o=JSON.parse(r.commander); if(o&&o.v===2){m={...m,...o};}
       else if(typeof r.commander==="string"&&!r.commander.startsWith("{")) m.name=r.commander;}
   catch(_){ if(r.commander&&!r.commander.startsWith("{")) m.name=r.commander; }
@@ -400,7 +467,35 @@ function card(r){
   const m=r.meta, dt=r.created_at?new Date(r.created_at).toLocaleDateString('ko-KR'):"";
   const name=m.name||"(사령관 미입력)";
   const buffsHtml=m.buffs?`<div class="cmd-buffs"><div class="buffs-h">📊 버프 / 요약</div><div class="buffs-b">${hl(m.buffs)}</div></div>`:"";
-  const fm=m.formation?`<div class="fig fl"></div>`:"";
+
+  // 비문: 수치 입력이 있으면 재구성 패널, 없으면 원본 사진으로 폴백
+  const inscData=(m.insc||[]).filter(s=>s.atk||s.def||s.hp||(s.bonus&&s.bonus.trim()));
+  let inscPanel;
+  if(inscData.length){
+    inscPanel=`<div class="insc-panel"><div class="ph">💠 비문</div>`+
+      m.insc.map(s=>{
+        const has=s.atk||s.def||s.hp||(s.bonus&&s.bonus.trim());
+        if(!has) return "";
+        const st=[s.atk?`<b class="a">공 +${s.atk}%</b>`:"",
+                  s.def?`<b class="d">방 +${s.def}%</b>`:"",
+                  s.hp?`<b class="h">체 +${s.hp}%</b>`:""].filter(Boolean).join("");
+        return `<div class="insc-slot"><div class="nm">${esc(s.name)}</div>`+
+               (st?`<div class="st">${st}</div>`:"")+
+               (s.bonus&&s.bonus.trim()?`<div class="bn">${hl(s.bonus)}</div>`:"")+`</div>`;
+      }).join("")+`</div>`;
+  }else if(r.insc_url){
+    inscPanel=`<figure class="eqframe" style="flex:1"><img src="${r.insc_url}" onclick="zoom(this.src)"><figcaption>비문/특성</figcaption></figure>`;
+  }else{
+    inscPanel=`<div class="insc-panel"><div class="ph">💠 비문</div><div class="insc-slot" style="color:#8a97b2;font-size:11px">비문 수치 미입력</div></div>`;
+  }
+
+  // 참고용 원본 사진(비문 수치 입력된 경우 접어서 제공)
+  let refRow="";
+  const refs=[];
+  if(inscData.length && r.insc_url) refs.push(`<figure class="fig"><img src="${r.insc_url}" onclick="zoom(this.src)"><figcaption>비문 원본</figcaption></figure>`);
+  if(m.extraUrl) refs.push(`<figure class="fig"><img src="${m.extraUrl}" onclick="zoom(this.src)"><figcaption>총버프</figcaption></figure>`);
+  if(refs.length) refRow=`<details class="refs"><summary>📎 원본 사진 보기 (${refs.length})</summary><div class="ref-row">${refs.join("")}</div></details>`;
+
   return `<div class="cmd">
     <div class="cmd-head">
       <div class="portrait"><img src="${r.eq_url}" alt=""></div>
@@ -416,10 +511,10 @@ function card(r){
       <div class="cmd-date">${dt}${m.formation?`<br><span class="fm">${esc(m.formation)}</span>`:''}</div>
     </div>
     <div class="cmd-body">
-      <figure class="fig"><img src="${r.eq_url}" onclick="zoom(this.src)"><figcaption>장비</figcaption></figure>
-      <figure class="fig"><img src="${r.insc_url}" onclick="zoom(this.src)"><figcaption>비문/특성</figcaption></figure>
-      ${m.extraUrl?`<figure class="fig"><img src="${m.extraUrl}" onclick="zoom(this.src)"><figcaption>총버프</figcaption></figure>`:''}
+      <figure class="eqframe"><img src="${r.eq_url}" onclick="zoom(this.src)"><figcaption>장비</figcaption></figure>
+      ${inscPanel}
     </div>
+    ${refRow}
     ${buffsHtml}
   </div>`;
 }
