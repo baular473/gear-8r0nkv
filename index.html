@@ -4,65 +4,110 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>강철손 장비·비문 모음</title>
+<title>강철손 장비·비문 분석</title>
 <style>
-  :root{--bg:#0f1420;--card:#171e2e;--line:#283347;--txt:#e6ebf5;--mut:#8b97ad;
-        --accent:#4f8cff;--green:#2ec27e;--red:#ff5d6c;--amber:#ffb020;--head:#1f2a40;}
+  :root{--bg:#0b1020;--bg2:#0e1428;--card:#141b30;--card2:#172038;--line:#263150;
+        --txt:#e8edf7;--mut:#8a97b2;--gold:#f5b942;--gold2:#ffd27a;
+        --accent:#4f8cff;--atk:#ff6b6b;--def:#5bb3ff;--hp:#4fd48a;--delta:#39d98a;--head:#1b2440;}
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.5 "Segoe UI",system-ui,sans-serif;}
-  header{padding:18px 24px;background:linear-gradient(90deg,#17233c,#141a28);border-bottom:1px solid var(--line);}
-  h1{margin:0;font-size:20px;}
-  .sub{color:var(--mut);font-size:12px;margin-top:4px;}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -200px,#131c3a,#0b1020);color:var(--txt);
+       font:14px/1.55 "Inter","Segoe UI",system-ui,sans-serif;}
+  header{padding:16px 22px;background:linear-gradient(90deg,#141d38,#0e1428);border-bottom:1px solid var(--line);}
+  h1{margin:0;font-size:19px;letter-spacing:.3px;}
+  h1 .g{color:var(--gold);}
+  .sub{color:var(--mut);font-size:12px;margin-top:3px;}
   .sub a{color:#9fd0ff;text-decoration:none;}
-  .wrap{padding:18px 24px;max-width:1500px;margin:0 auto;}
-  .tabs{display:flex;gap:8px;margin:14px 0;}
-  .tab{padding:8px 16px;border:1px solid var(--line);border-radius:9px;cursor:pointer;background:var(--card);color:var(--mut);}
-  .tab.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
-  input,select,textarea{background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:13px;}
-  input::placeholder{color:var(--mut);}
-  label.fld{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mut);}
-  .form{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;max-width:560px;}
+  .wrap{padding:18px 22px;max-width:1400px;margin:0 auto;}
+  .tabs{display:flex;gap:8px;margin:12px 0 16px;}
+  .tab{padding:8px 16px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--card);color:var(--mut);font-weight:600;}
+  .tab.on{background:linear-gradient(90deg,#2f6bff,#4f8cff);color:#fff;border-color:transparent;}
+  .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
+  input,select,textarea{background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px 11px;font-size:13px;font-family:inherit;}
+  input::placeholder,textarea::placeholder{color:var(--mut);}
+  textarea{width:100%;resize:vertical;min-height:84px;line-height:1.5;}
+  .sel{min-width:120px;}
+  label.fld{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mut);font-weight:600;}
+
+  /* 업로드 폼 */
+  .form{background:linear-gradient(180deg,#141b30,#111831);border:1px solid var(--line);border-radius:16px;padding:22px;max-width:720px;}
   .form .row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
-  .form .row > *{flex:1;min-width:160px;}
-  .drop{border:2px dashed var(--line);border-radius:10px;padding:14px;text-align:center;cursor:pointer;color:var(--mut);background:#0e1626;}
-  .drop.has{border-color:var(--green);color:var(--txt);}
-  .drop img{max-width:100%;max-height:200px;border-radius:8px;margin-top:8px;}
-  button.go{width:100%;padding:12px;border:0;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;font-size:15px;}
-  button.go:disabled{opacity:.5;cursor:default;}
-  .msg{margin-top:12px;font-size:13px;min-height:18px;}
-  .msg.ok{color:var(--green);} .msg.err{color:var(--red);}
-  .govsec{margin:22px 0;}
-  .govsec h3{margin:0 0 10px;font-size:16px;border-left:4px solid var(--accent);padding-left:10px;}
-  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
-  .card .ct{padding:9px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);}
-  .badge{background:#223052;color:#9fd0ff;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;}
-  .card .cmd{color:var(--mut);font-size:12px;}
-  .imgs{display:flex;}
-  .imgs figure{margin:0;flex:1;}
-  .imgs img{width:100%;height:150px;object-fit:cover;cursor:zoom-in;display:block;}
-  .imgs figcaption{font-size:11px;color:var(--mut);text-align:center;padding:3px;background:#0e1626;}
-  .date{font-size:11px;color:var(--mut);padding:6px 12px;}
-  .by{margin-top:18px;padding-top:12px;border-top:1px solid var(--line);text-align:center;color:var(--mut);font-size:12px;}
-  .by b{color:#9fd0ff;}
-  #lb{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:900;cursor:zoom-out;}
-  #lb img{max-width:95vw;max-height:95vh;border-radius:8px;}
+  .form .row > *{flex:1;min-width:150px;}
+  .stars-pick{display:flex;gap:3px;font-size:22px;cursor:pointer;user-select:none;}
+  .stars-pick span{color:#3a4668;transition:.1s;} .stars-pick span.on{color:var(--gold);text-shadow:0 0 8px rgba(245,185,66,.5);}
+  .chk{display:flex;align-items:center;gap:7px;color:var(--txt);font-size:13px;font-weight:600;}
+  .drop{border:2px dashed var(--line);border-radius:12px;padding:14px;text-align:center;cursor:pointer;color:var(--mut);background:#0d1526;transition:.15s;}
+  .drop.has{border-color:var(--hp);color:var(--txt);background:#0f1b2e;}
+  .drop img{max-width:100%;max-height:190px;border-radius:8px;margin-top:8px;}
+  .drop .pv{margin-top:8px;}
+  button.go{width:100%;padding:13px;border:0;border-radius:11px;background:linear-gradient(90deg,#f5b942,#ffcf6e);color:#2a1c00;font-weight:800;cursor:pointer;font-size:15px;letter-spacing:.3px;}
+  button.go:disabled{opacity:.55;cursor:default;}
+  .msg{margin-top:12px;font-size:13px;min-height:18px;font-weight:600;}
+  .msg.ok{color:var(--hp);} .msg.err{color:var(--atk);} .msg.wait{color:var(--gold2);}
+  .ocrbox{font-size:11px;color:var(--mut);margin-top:4px;}
+
+  /* 갤러리 */
+  .govsec{margin:10px 0 26px;}
+  .govsec h3{margin:0 0 12px;font-size:17px;display:flex;align-items:center;gap:9px;}
+  .govsec h3 .nm{border-left:4px solid var(--gold);padding-left:10px;}
+  .govsec h3 .ct{color:var(--mut);font-size:12px;font-weight:500;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(430px,1fr));gap:18px;}
+
+  .cmd{background:linear-gradient(180deg,#141c33,#10172c);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+       box-shadow:0 8px 30px rgba(0,0,0,.35);}
+  .cmd-head{display:flex;align-items:center;gap:12px;padding:13px 15px;background:linear-gradient(90deg,#1a2murky,#141d38);
+            background:linear-gradient(90deg,#1b2banner,#141d38);background:linear-gradient(90deg,#1a243f,#131b32);border-bottom:1px solid var(--line);}
+  .portrait{width:52px;height:52px;border-radius:12px;border:2px solid var(--gold);overflow:hidden;flex:0 0 auto;background:#0d1526;}
+  .portrait img{width:100%;height:100%;object-fit:cover;}
+  .cmd-id{flex:1;min-width:0;}
+  .cmd-name{font-size:16px;font-weight:800;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .exp{font-size:10px;font-weight:700;color:#2a1c00;background:linear-gradient(90deg,#f5b942,#ffcf6e);padding:2px 7px;border-radius:6px;letter-spacing:.3px;}
+  .cmd-lv{font-size:12px;color:var(--mut);margin-top:2px;}
+  .cmd-lv .st{color:var(--gold);letter-spacing:1px;}
+  .cmd-badges{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+  .bdg{font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px;}
+  .bdg.troop{background:#20305a;color:#9fc1ff;}
+  .bdg.build{background:#2a2440;color:#d7b6ff;}
+  .bdg.set{background:#3a2a16;color:var(--gold2);}
+  .cmd-date{font-size:11px;color:var(--mut);text-align:right;flex:0 0 auto;}
+
+  .cmd-body{display:flex;gap:10px;padding:12px 14px;}
+  .fig{flex:1;margin:0;background:#0d1526;border:1px solid var(--line);border-radius:11px;overflow:hidden;}
+  .fig img{width:100%;height:210px;object-fit:contain;background:#0a1120;cursor:zoom-in;display:block;}
+  .fig figcaption{font-size:11px;color:var(--mut);text-align:center;padding:5px;background:#111a2d;font-weight:600;}
+  .fig .fl{font-size:10px;color:var(--gold2);text-align:center;padding:3px;background:#141d33;}
+
+  .cmd-buffs{padding:4px 15px 15px;}
+  .buffs-h{font-size:12px;color:var(--gold2);font-weight:700;letter-spacing:1px;text-align:center;
+           border-top:1px solid var(--line);padding-top:10px;margin-bottom:8px;}
+  .buffs-b{font-size:12.5px;color:#c7d2e6;white-space:pre-wrap;word-break:break-word;line-height:1.7;}
+  .buffs-b .p{color:var(--delta);font-weight:700;}
+  .buffs-b .n{color:#ffd27a;font-weight:700;}
+  .fm{color:var(--gold2);font-weight:700;}
+
+  .by{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);text-align:center;color:var(--mut);font-size:12px;}
+  .by b{color:var(--gold2);}
+  .empty{color:var(--mut);padding:30px;text-align:center;}
+
+  #lb{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:900;cursor:zoom-out;}
+  #lb img{max-width:95vw;max-height:95vh;border-radius:10px;}
+
   /* gate */
-  #gate{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;}
-  .gatebox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px 26px;width:min(360px,90vw);text-align:center;}
-  .gatebox h2{margin:0 0 6px;font-size:18px;}
+  #gate{position:fixed;inset:0;z-index:1000;background:radial-gradient(900px 500px at 50% -150px,#131c3a,#0b1020);display:flex;align-items:center;justify-content:center;}
+  .gatebox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:30px 28px;width:min(360px,90vw);text-align:center;box-shadow:0 14px 50px rgba(0,0,0,.55);}
+  .gatebox h2{margin:0 0 6px;font-size:19px;} .gatebox h2 .g{color:var(--gold);}
   .gatebox p{color:var(--mut);font-size:12px;margin:0 0 16px;}
-  .gatebox input{width:100%;text-align:center;letter-spacing:2px;margin-bottom:10px;padding:11px;}
-  .gatebox button{width:100%;padding:11px;border:0;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;}
-  .gateerr{color:var(--red);font-size:12px;height:16px;margin-top:8px;}
+  .gatebox input{width:100%;text-align:center;letter-spacing:2px;margin-bottom:10px;padding:12px;}
+  .gatebox button{width:100%;padding:12px;border:0;border-radius:9px;background:linear-gradient(90deg,#f5b942,#ffcf6e);color:#2a1c00;font-weight:800;cursor:pointer;}
+  .gateerr{color:var(--atk);font-size:12px;height:16px;margin-top:8px;}
   body.locked{overflow:hidden;}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid var(--gold2);border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:6px;}
+  @keyframes sp{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body class="locked">
 <div id="gate">
   <div class="gatebox">
-    <h2>🔒 강철손 장비·비문</h2>
+    <h2>🛡️ 강철손 <span class="g">장비·비문 분석</span></h2>
     <p>비밀번호를 입력하세요</p>
     <input id="gpw" type="password" placeholder="비밀번호" autocomplete="off">
     <button id="gbtn">입장</button>
@@ -71,8 +116,8 @@
 </div>
 
 <header>
-  <h1>🛡️ 강철손 장비·비문 모음</h1>
-  <div class="sub"><a href="https://baular473.github.io/broll-pa7tlu/">← 브롤 추적 홈피</a> · made by <b style="color:#9fd0ff">Huni</b></div>
+  <h1>🛡️ 강철손 <span class="g">장비·비문 분석</span></h1>
+  <div class="sub"><a href="https://baular473.github.io/broll-pa7tlu/">← 브롤 추적 홈피</a> · 사진 올리면 자동 분석 카드로 변환 · made by <b style="color:#9fd0ff">Huni</b></div>
 </header>
 
 <div class="wrap">
@@ -84,8 +129,10 @@
   <!-- 갤러리 -->
   <div id="view-list">
     <div class="bar">
-      <input id="q" placeholder="🔍 닉네임 검색" style="width:200px">
-      <select id="fbuild"><option value="">전체 빌드</option></select>
+      <input id="q" placeholder="🔍 닉네임·사령관 검색" style="width:220px">
+      <select id="ftroop" class="sel"><option value="">전체 병종</option>
+        <option>기마</option><option>보병</option><option>궁병</option><option>리더십</option><option>혼합</option></select>
+      <select id="fbuild" class="sel"><option value="">전체 빌드</option></select>
       <span class="sub" id="cnt"></span>
     </div>
     <div id="gallery"></div>
@@ -95,28 +142,64 @@
   <div id="view-add" style="display:none">
     <div class="form">
       <div class="row">
-        <label class="fld">닉네임
+        <label class="fld">닉네임 *
           <input id="f-nick" placeholder="게임 내 닉네임" maxlength="40">
         </label>
-        <label class="fld">빌드
-          <select id="f-build"></select>
-        </label>
-      </div>
-      <div class="row">
-        <label class="fld" style="flex:1">사령관 (선택)
+        <label class="fld">사령관
           <input id="f-cmd" placeholder="예: 이반 4세" maxlength="40">
         </label>
       </div>
       <div class="row">
-        <label class="fld" style="flex:1">① 장비 스크린샷
-          <div class="drop" id="d-eq">장비 그리드 사진 선택/드래그
-            <input type="file" id="f-eq" accept="image/*" hidden>
-          </div>
+        <label class="fld">병종
+          <select id="f-troop" class="sel">
+            <option>기마</option><option>보병</option><option>궁병</option><option>리더십</option><option>혼합</option></select>
         </label>
-        <label class="fld" style="flex:1">② 비문/특성 스크린샷
+        <label class="fld">빌드
+          <select id="f-build" class="sel"></select>
+        </label>
+        <label class="fld">레벨
+          <input id="f-level" type="number" min="1" max="60" value="60" style="width:80px">
+        </label>
+      </div>
+      <div class="row">
+        <label class="fld">성급
+          <div class="stars-pick" id="f-stars"><span data-s="1">★</span><span data-s="2">★</span><span data-s="3">★</span><span data-s="4">★</span><span data-s="5">★</span><span data-s="6">★</span></div>
+        </label>
+        <label class="chk" style="align-self:flex-end;min-width:120px"><input type="checkbox" id="f-exp"> 전문화(Expertised)</label>
+      </div>
+      <div class="row">
+        <label class="fld">액티브 세트
+          <input id="f-set" list="setlist" placeholder="예: 드래곤 브레스">
+          <datalist id="setlist">
+            <option>지옥의 황무지</option><option>영원한 제국</option><option>드래곤 브레스</option>
+            <option>영광의 여신</option><option>기사 세트</option><option>마녀 세트</option>
+            <option>늑대 세트</option><option>리바이벌</option><option>숲의 수호자</option>
+            <option>수확자</option><option>윈드스웹트</option><option>뱅가드</option>
+            <option>전령 세트</option><option>명장 세트</option></datalist>
+        </label>
+        <label class="fld">진형
+          <input id="f-form" placeholder="예: 삼행진 / 쐐기 진형">
+        </label>
+      </div>
+      <div class="row">
+        <label class="fld" style="flex:1">① 장비 스크린샷 *
+          <div class="drop" id="d-eq">장비 그리드 사진 선택/드래그
+            <input type="file" id="f-eq" accept="image/*" hidden></div>
+        </label>
+        <label class="fld" style="flex:1">② 비문/특성 스크린샷 *
           <div class="drop" id="d-insc">비문·특성 사진 선택/드래그
-            <input type="file" id="f-insc" accept="image/*" hidden>
-          </div>
+            <input type="file" id="f-insc" accept="image/*" hidden></div>
+        </label>
+      </div>
+      <div class="row">
+        <label class="fld" style="flex:1">③ 총버프 스크린샷 (선택)
+          <div class="drop" id="d-extra">총버프 요약 사진(있으면)
+            <input type="file" id="f-extra" accept="image/*" hidden></div>
+        </label>
+      </div>
+      <div class="row">
+        <label class="fld" style="flex:1">버프/요약 메모 <span class="ocrbox" id="ocrstat"></span>
+          <textarea id="f-buffs" placeholder="사진 올리면 자동 인식(OCR)된 텍스트가 여기 채워집니다. 자유롭게 수정하세요."></textarea>
         </label>
       </div>
       <button class="go" id="submit">등록하기</button>
@@ -124,25 +207,26 @@
     </div>
   </div>
 
-  <div class="by">🛡️ 강철손 장비·비문 모음 · made by <b>Huni</b></div>
+  <div class="by">🛡️ 강철손 장비·비문 분석 · made by <b>Huni</b></div>
 </div>
 
 <div id="lb"><img id="lbimg" src=""></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-/* ================== 설정 (Supabase 연결값) ================== */
+/* ===== 설정 ===== */
 const SUPABASE_URL = "https://dgplnukpxgwrwuwljlyv.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRncGxudWtweGd3cnd1d2xqbHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNzUwODcsImV4cCI6MjEwNjk1MTA4N30.Wy36x5lDnceBNqUWnkECWBQyQU98E8Z1d1lPO7g7jA0";
-const BUCKET = "gear";
-const TABLE = "loadouts";
-const BUILDS = ["궁병 1","궁병 2","궁병 3","기마 1","기마 2","기마 3",
-                "보병 1","보병 2","보병 3","리더십 1","리더십 2","리더십 3"];
+const BUCKET="gear", TABLE="loadouts";
+const BUILDS=["궁병 1","궁병 2","궁병 3","기마 1","기마 2","기마 3","보병 1","보병 2","보병 3","리더십 1","리더십 2","리더십 3"];
 
-/* ================== 비밀번호 게이트 ================== */
+/* ===== 상태 (TDZ 방지: 게이트보다 먼저 선언) ===== */
+let sb=null, DATA=null, FILES={eq:null,insc:null,extra:null}, STARS=6, OCRTEXT={};
+
+/* ===== 비밀번호 게이트 ===== */
 (function(){
-  const HASH="953510b1f35f67f9b52d3269027222aa5c22f5c2aa363ac771ad25daa920c054";
-  const KEY="broll_gate_ok";
+  const HASH="953510b1f35f67f9b52d3269027222aa5c22f5c2aa363ac771ad25daa920c054", KEY="broll_gate_ok";
   async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));
     return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
   function open(){document.getElementById("gate").style.display="none";document.body.classList.remove("locked");init();}
@@ -154,142 +238,190 @@ const BUILDS = ["궁병 1","궁병 2","궁병 3","기마 1","기마 2","기마 3
   btn.onclick=tryIn; inp.addEventListener("keydown",e=>{if(e.key==="Enter")tryIn();}); inp.focus();
 })();
 
-/* ================== 메인 ================== */
-let sb=null;
+/* ===== 초기화 ===== */
 function init(){
-  // 빌드 셀렉트 채우기
   const fb=document.getElementById("f-build"), ff=document.getElementById("fbuild");
   BUILDS.forEach(b=>{fb.appendChild(new Option(b,b)); ff.appendChild(new Option(b,b));});
+  document.getElementById("f-build").value="기마 1";
 
-  // 탭
   document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on');
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); t.classList.add('on');
     document.getElementById('view-list').style.display=t.dataset.v==='list'?'':'none';
     document.getElementById('view-add').style.display=t.dataset.v==='add'?'':'none';
     if(t.dataset.v==='list') loadGallery();
   });
 
-  // 드롭존
-  setupDrop("d-eq","f-eq","eq"); setupDrop("d-insc","f-insc","insc");
+  // 성급 선택
+  const sp=document.getElementById("f-stars");
+  function paint(){sp.querySelectorAll('span').forEach(s=>s.classList.toggle('on',+s.dataset.s<=STARS));}
+  sp.querySelectorAll('span').forEach(s=>s.onclick=()=>{STARS=+s.dataset.s;paint();}); paint();
+
+  setupDrop("d-eq","f-eq","eq",true);
+  setupDrop("d-insc","f-insc","insc",true);
+  setupDrop("d-extra","f-extra","extra",true);
   document.getElementById("submit").onclick=submit;
   document.getElementById("q").oninput=renderGallery;
+  document.getElementById("ftroop").onchange=renderGallery;
   document.getElementById("fbuild").onchange=renderGallery;
+  const lb=document.getElementById("lb"); lb.onclick=()=>lb.style.display="none";
 
-  // 라이트박스
-  const lb=document.getElementById("lb");
-  lb.onclick=()=>lb.style.display="none";
-
-  if(SUPABASE_URL.startsWith("__")){
-    document.getElementById("gallery").innerHTML=
-      '<p style="color:#ffb020">⚠️ Supabase 연결값이 아직 설정되지 않았습니다. (관리자: SUPABASE_URL / ANON_KEY 입력 필요)</p>';
-    return;
-  }
+  if(SUPABASE_URL.startsWith("__")){document.getElementById("gallery").innerHTML='<p class="empty">⚠️ Supabase 미설정</p>';return;}
   sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
   loadGallery();
 }
 
-let FILES={eq:null,insc:null};
-function setupDrop(dropId,inputId,slot){
+/* ===== 드롭존 + OCR ===== */
+function setupDrop(dropId,inputId,slot,ocr){
   const drop=document.getElementById(dropId), input=document.getElementById(inputId);
   drop.onclick=()=>input.click();
-  input.onchange=()=>pick(slot,drop,input.files[0]);
+  input.onchange=()=>pick(slot,drop,input.files[0],ocr);
   drop.ondragover=e=>{e.preventDefault();drop.classList.add('has');};
   drop.ondragleave=()=>{if(!FILES[slot])drop.classList.remove('has');};
-  drop.ondrop=e=>{e.preventDefault();const f=e.dataTransfer.files[0];
-    if(f){try{input.files=e.dataTransfer.files;}catch(_){ } pick(slot,drop,f);}};
+  drop.ondrop=e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f){try{input.files=e.dataTransfer.files;}catch(_){}pick(slot,drop,f,ocr);}};
 }
-function pick(slot,drop,file){
+function pick(slot,drop,file,ocr){
   if(!file)return;
-  FILES[slot]=file;
-  drop.classList.add('has');
-  let pv=drop.querySelector('.pv');
-  if(!pv){pv=document.createElement('div');pv.className='pv';drop.appendChild(pv);}
+  FILES[slot]=file; drop.classList.add('has');
+  let pv=drop.querySelector('.pv'); if(!pv){pv=document.createElement('div');pv.className='pv';drop.appendChild(pv);}
   pv.innerHTML=`선택됨: ${file.name}<br><img src="${URL.createObjectURL(file)}">`;
+  if(ocr) runOCR(slot,file);
 }
-function resetDrop(dropId,slot){
-  FILES[slot]=null;
-  const drop=document.getElementById(dropId);
-  drop.classList.remove('has');
-  const pv=drop.querySelector('.pv'); if(pv)pv.remove();
+async function runOCR(slot,file){
+  const stat=document.getElementById("ocrstat");
+  if(typeof Tesseract==="undefined"){return;}
+  stat.innerHTML='<span class="spin"></span>사진 인식(OCR) 중…';
+  try{
+    const {data:{text}}=await Tesseract.recognize(file,'kor+eng');
+    OCRTEXT[slot]=cleanOCR(text);
+    // 비문/총버프 위주로 메모 채움 (장비 그리드는 아이콘뿐이라 제외)
+    const parts=[OCRTEXT.insc,OCRTEXT.extra].filter(Boolean);
+    const ta=document.getElementById("f-buffs");
+    const merged=parts.join("\n");
+    if(merged && (!ta.value.trim() || ta.dataset.auto==="1")){ ta.value=merged; ta.dataset.auto="1"; }
+    // 사령관명 추정(장비 스샷 상단 큰 글자)
+    if(slot==="eq" && !document.getElementById("f-cmd").value){
+      const guess=guessName(OCRTEXT.eq); if(guess) document.getElementById("f-cmd").value=guess;
+    }
+    stat.innerHTML='✅ 자동 인식 완료 (수정 가능)';
+  }catch(e){ stat.innerHTML='인식 생략'; }
 }
+function cleanOCR(t){return (t||"").split("\n").map(l=>l.trim()).filter(l=>l && !/^[^\w가-힣%+\-.]+$/.test(l)).join("\n");}
+function guessName(t){if(!t)return"";const m=(t.split("\n").map(s=>s.trim()).filter(Boolean));
+  for(const l of m){ if(/[가-힣]/.test(l) && l.length<=12 && !/%|\+|레벨|Lv/i.test(l)) return l;} return "";}
 
+/* ===== 등록 ===== */
 async function submit(){
   const msg=document.getElementById("msg");
   const nick=document.getElementById("f-nick").value.trim();
   const build=document.getElementById("f-build").value;
-  const cmd=document.getElementById("f-cmd").value.trim();
-  const eq=FILES.eq;
-  const insc=FILES.insc;
-  if(!nick){return say(msg,"닉네임을 입력하세요","err");}
-  if(!eq||!insc){return say(msg,"사진 2장(장비·비문)을 모두 올려주세요","err");}
-  if(!sb){return say(msg,"Supabase 미설정","err");}
-  const btn=document.getElementById("submit");btn.disabled=true;say(msg,"업로드 중…","");
+  if(!nick) return say(msg,"닉네임을 입력하세요","err");
+  if(!FILES.eq||!FILES.insc) return say(msg,"장비·비문 사진 2장은 필수입니다","err");
+  if(!sb) return say(msg,"Supabase 미설정","err");
+  const btn=document.getElementById("submit"); btn.disabled=true;
+  say(msg,'<span class="spin"></span>업로드 중…',"wait");
   try{
-    const stamp=Date.now();
-    const rid=Math.random().toString(36).slice(2,8);
-    let safe=nick.replace(/[^A-Za-z0-9_-]/g,"");   // 저장소 키는 영문/숫자만 허용 → 한글 등 제거
-    if(!safe)safe="u";
-    const ext1=(eq.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
-    const ext2=(insc.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
-    const p1=`${safe}/${stamp}_${rid}_eq.${ext1}`, p2=`${safe}/${stamp}_${rid}_insc.${ext2}`;
-    const u1=await sb.storage.from(BUCKET).upload(p1,eq,{upsert:false,contentType:eq.type});
-    if(u1.error)throw u1.error;
-    const u2=await sb.storage.from(BUCKET).upload(p2,insc,{upsert:false,contentType:insc.type});
-    if(u2.error)throw u2.error;
-    const eqUrl=sb.storage.from(BUCKET).getPublicUrl(p1).data.publicUrl;
-    const inscUrl=sb.storage.from(BUCKET).getPublicUrl(p2).data.publicUrl;
-    const ins=await sb.from(TABLE).insert({nickname:nick,build:build,commander:cmd||null,
-      eq_url:eqUrl,insc_url:inscUrl});
+    const up=async(file,tag)=>{
+      const stamp=Date.now(), rid=Math.random().toString(36).slice(2,8);
+      let safe=nick.replace(/[^A-Za-z0-9_-]/g,""); if(!safe)safe="u";
+      const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+      const p=`${safe}/${stamp}_${rid}_${tag}.${ext}`;
+      const r=await sb.storage.from(BUCKET).upload(p,file,{upsert:false,contentType:file.type}); if(r.error)throw r.error;
+      return sb.storage.from(BUCKET).getPublicUrl(p).data.publicUrl;
+    };
+    const eqUrl=await up(FILES.eq,"eq"), inscUrl=await up(FILES.insc,"insc");
+    let extraUrl=null; if(FILES.extra) extraUrl=await up(FILES.extra,"extra");
+    const meta={v:2,
+      name:document.getElementById("f-cmd").value.trim(),
+      level:+document.getElementById("f-level").value||60,
+      stars:STARS, exp:document.getElementById("f-exp").checked,
+      troop:document.getElementById("f-troop").value,
+      set:document.getElementById("f-set").value.trim(),
+      formation:document.getElementById("f-form").value.trim(),
+      buffs:document.getElementById("f-buffs").value.trim(),
+      extraUrl};
+    const ins=await sb.from(TABLE).insert({nickname:nick,build,commander:JSON.stringify(meta),eq_url:eqUrl,insc_url:inscUrl});
     if(ins.error)throw ins.error;
-    say(msg,"✅ 등록 완료! '모음' 탭에서 확인하세요.","ok");
-    document.getElementById("f-nick").value="";document.getElementById("f-cmd").value="";
-    document.getElementById("f-eq").value="";document.getElementById("f-insc").value="";
-    resetDrop("d-eq","eq");resetDrop("d-insc","insc");
-    DATA=null;
-  }catch(e){say(msg,"오류: "+(e.message||e),"err");}
+    say(msg,"✅ 등록 완료! '모음' 탭에서 분석 카드를 확인하세요.","ok");
+    resetForm(); DATA=null;
+  }catch(e){ say(msg,"오류: "+(e.message||e),"err"); }
   btn.disabled=false;
 }
-function say(el,t,c){el.textContent=t;el.className="msg "+(c||"");}
+function resetForm(){
+  ["f-nick","f-cmd","f-set","f-form","f-buffs"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("f-level").value=60; document.getElementById("f-exp").checked=false;
+  document.getElementById("f-buffs").dataset.auto=""; document.getElementById("ocrstat").textContent="";
+  FILES={eq:null,insc:null,extra:null}; OCRTEXT={};
+  ["d-eq","d-insc","d-extra"].forEach(id=>{const d=document.getElementById(id);d.classList.remove("has");const pv=d.querySelector(".pv");if(pv)pv.remove();});
+}
+function say(el,t,c){el.innerHTML=t;el.className="msg "+(c||"");}
 
-let DATA=null;
+/* ===== 갤러리 ===== */
 async function loadGallery(){
   if(!sb)return;
   if(!DATA){
     const {data,error}=await sb.from(TABLE).select("*").order("nickname").order("build");
-    if(error){document.getElementById("gallery").innerHTML="<p style='color:#ff5d6c'>불러오기 오류: "+error.message+"</p>";return;}
-    DATA=data||[];
+    if(error){document.getElementById("gallery").innerHTML='<p class="empty" style="color:#ff6b6b">불러오기 오류: '+error.message+'</p>';return;}
+    DATA=(data||[]).map(parseRow);
   }
   renderGallery();
+}
+function parseRow(r){
+  let m={name:"",level:60,stars:6,exp:false,troop:"",set:"",formation:"",buffs:"",extraUrl:null};
+  try{const o=JSON.parse(r.commander); if(o&&o.v===2){m={...m,...o};}
+      else if(typeof r.commander==="string"&&!r.commander.startsWith("{")) m.name=r.commander;}
+  catch(_){ if(r.commander&&!r.commander.startsWith("{")) m.name=r.commander; }
+  return {...r,meta:m,_junk:(r.commander&&r.commander.includes("PSPath"))||r.nickname==="__TEST__"};
 }
 function renderGallery(){
   if(!DATA)return;
   const q=document.getElementById("q").value.trim().toLowerCase();
-  const fb=document.getElementById("fbuild").value;
-  let rows=DATA.filter(r=>(!q||r.nickname.toLowerCase().includes(q))&&(!fb||r.build===fb));
+  const ft=document.getElementById("ftroop").value, fb=document.getElementById("fbuild").value;
+  let rows=DATA.filter(r=>!r._junk)
+    .filter(r=>(!q||r.nickname.toLowerCase().includes(q)||(r.meta.name||"").toLowerCase().includes(q))
+             &&(!ft||r.meta.troop===ft)&&(!fb||r.build===fb));
   document.getElementById("cnt").textContent=`총 ${rows.length}개 · 인원 ${new Set(rows.map(r=>r.nickname)).size}명`;
-  const byNick={};
-  rows.forEach(r=>{(byNick[r.nickname]=byNick[r.nickname]||[]).push(r);});
+  const byNick={}; rows.forEach(r=>{(byNick[r.nickname]=byNick[r.nickname]||[]).push(r);});
   const nicks=Object.keys(byNick).sort((a,b)=>a.localeCompare(b,'ko'));
   let html="";
-  if(!nicks.length){html="<p style='color:#8b97ad'>아직 등록된 장비·비문이 없습니다. '등록' 탭에서 올려보세요.</p>";}
+  if(!nicks.length) html='<p class="empty">아직 등록된 장비·비문이 없습니다. ‘등록’ 탭에서 사진을 올려보세요.</p>';
   nicks.forEach(nk=>{
-    html+=`<div class="govsec"><h3>${esc(nk)} <span class="sub">(${byNick[nk].length})</span></h3><div class="cards">`;
     byNick[nk].sort((a,b)=>BUILDS.indexOf(a.build)-BUILDS.indexOf(b.build));
-    byNick[nk].forEach(r=>{
-      const dt=r.created_at?new Date(r.created_at).toLocaleDateString('ko-KR'):"";
-      html+=`<div class="card">
-        <div class="ct"><span class="badge">${esc(r.build)}</span>
-          <span class="cmd">${r.commander?esc(r.commander):""}</span></div>
-        <div class="imgs">
-          <figure><img src="${r.eq_url}" onclick="zoom(this.src)"><figcaption>장비</figcaption></figure>
-          <figure><img src="${r.insc_url}" onclick="zoom(this.src)"><figcaption>비문</figcaption></figure>
-        </div>
-        <div class="date">${dt}</div></div>`;
-    });
-    html+="</div></div>";
+    html+=`<div class="govsec"><h3><span class="nm">${esc(nk)}</span><span class="ct">${byNick[nk].length}개 빌드</span></h3><div class="cards">`;
+    byNick[nk].forEach(r=>html+=card(r));
+    html+=`</div></div>`;
   });
   document.getElementById("gallery").innerHTML=html;
+}
+function stars(n){n=Math.max(0,Math.min(6,n|0));return '★'.repeat(n)+'☆'.repeat(6-n);}
+function hl(t){return esc(t)
+  .replace(/([+\-]?\d+(?:\.\d+)?%)/g,'<span class="p">$1</span>')
+  .replace(/(?:^|\s)(\+\d+(?:\.\d+)?)(?!%)/g,m=>m.replace(/(\+\d+(?:\.\d+)?)/,'<span class="n">$1</span>'));}
+function card(r){
+  const m=r.meta, dt=r.created_at?new Date(r.created_at).toLocaleDateString('ko-KR'):"";
+  const name=m.name||"(사령관 미입력)";
+  const buffsHtml=m.buffs?`<div class="cmd-buffs"><div class="buffs-h">📊 버프 / 요약</div><div class="buffs-b">${hl(m.buffs)}</div></div>`:"";
+  const fm=m.formation?`<div class="fig fl"></div>`:"";
+  return `<div class="cmd">
+    <div class="cmd-head">
+      <div class="portrait"><img src="${r.eq_url}" alt=""></div>
+      <div class="cmd-id">
+        <div class="cmd-name">${esc(name)} ${m.exp?'<span class="exp">Expertised</span>':''}</div>
+        <div class="cmd-lv">Lv.${m.level||60} <span class="st">${stars(m.stars)}</span></div>
+        <div class="cmd-badges">
+          ${m.troop?`<span class="bdg troop">${esc(m.troop)}</span>`:''}
+          <span class="bdg build">${esc(r.build)}</span>
+          ${m.set?`<span class="bdg set">${esc(m.set)}</span>`:''}
+        </div>
+      </div>
+      <div class="cmd-date">${dt}${m.formation?`<br><span class="fm">${esc(m.formation)}</span>`:''}</div>
+    </div>
+    <div class="cmd-body">
+      <figure class="fig"><img src="${r.eq_url}" onclick="zoom(this.src)"><figcaption>장비</figcaption></figure>
+      <figure class="fig"><img src="${r.insc_url}" onclick="zoom(this.src)"><figcaption>비문/특성</figcaption></figure>
+      ${m.extraUrl?`<figure class="fig"><img src="${m.extraUrl}" onclick="zoom(this.src)"><figcaption>총버프</figcaption></figure>`:''}
+    </div>
+    ${buffsHtml}
+  </div>`;
 }
 function zoom(src){const lb=document.getElementById("lb");document.getElementById("lbimg").src=src;lb.style.display="flex";}
 function esc(s){return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
