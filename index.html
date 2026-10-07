@@ -146,7 +146,7 @@ const BUILDS = ["궁병 1","궁병 2","궁병 3","기마 1","기마 2","기마 3
   async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));
     return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
   function open(){document.getElementById("gate").style.display="none";document.body.classList.remove("locked");init();}
-  if(sessionStorage.getItem(KEY)==="1"||localStorage.getItem(KEY)==="1"){open();return;}
+  if(sessionStorage.getItem(KEY)==="1"||localStorage.getItem(KEY)==="1"){setTimeout(open,0);return;}
   const inp=document.getElementById("gpw"),btn=document.getElementById("gbtn"),err=document.getElementById("gerr");
   async function tryIn(){const h=await sha(inp.value);
     if(h===HASH){sessionStorage.setItem(KEY,"1");localStorage.setItem(KEY,"1");open();}
