@@ -56,6 +56,7 @@
   table.insc-in td.slot{color:var(--gold2);font-weight:700;white-space:nowrap;font-size:11.5px;}
   table.insc-in input{width:100%;padding:7px 6px;text-align:center;}
   table.insc-in input.bn{text-align:left;}
+  table.insc-in input.snm{text-align:left;color:var(--gold2);font-weight:700;}
 
   /* 갤러리 */
   .govsec{margin:10px 0 26px;}
@@ -316,7 +317,7 @@ function init(){
   const ib=document.getElementById("insc-body");
   INSC_SLOTS.forEach((nm,i)=>{
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td class="slot">${nm}</td>
+    tr.innerHTML=`<td class="slot"><input class="snm" id="i${i}-nm" value="${nm}" placeholder="비문명"></td>
       <td><input type="number" step="0.1" id="i${i}-atk" placeholder="0"></td>
       <td><input type="number" step="0.1" id="i${i}-def" placeholder="0"></td>
       <td><input type="number" step="0.1" id="i${i}-hp" placeholder="0"></td>
@@ -419,7 +420,7 @@ async function submit(){
     let inscUrl=""; if(FILES.insc) inscUrl=await up(FILES.insc,"insc");
     let extraUrl=null; if(FILES.extra) extraUrl=await up(FILES.extra,"extra");
     const num=id=>{const v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;};
-    const insc=INSC_SLOTS.map((nm,i)=>({name:nm,
+    const insc=INSC_SLOTS.map((nm,i)=>({name:document.getElementById(`i${i}-nm`).value.trim()||nm,
       atk:num(`i${i}-atk`),def:num(`i${i}-def`),hp:num(`i${i}-hp`),
       bonus:document.getElementById(`i${i}-bn`).value.trim()}));
     const meta={v:2,
@@ -443,7 +444,7 @@ function resetForm(){
   document.getElementById("f-level").value=60; document.getElementById("f-exp").checked=false;
   document.getElementById("f-buffs").dataset.auto=""; document.getElementById("ocrstat").textContent="";
   FILES={eq:null,insc:null,extra:null}; OCRTEXT={};
-  INSC_SLOTS.forEach((_,i)=>["atk","def","hp","bn"].forEach(k=>document.getElementById(`i${i}-${k}`).value=""));
+  INSC_SLOTS.forEach((nm,i)=>{["atk","def","hp","bn"].forEach(k=>document.getElementById(`i${i}-${k}`).value="");document.getElementById(`i${i}-nm`).value=nm;});
   ["d-eq","d-insc","d-extra"].forEach(id=>{const d=document.getElementById(id);d.classList.remove("has");const pv=d.querySelector(".pv");if(pv)pv.remove();});
 }
 function say(el,t,c){el.innerHTML=t;el.className="msg "+(c||"");}
