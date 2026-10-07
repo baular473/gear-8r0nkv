@@ -227,8 +227,12 @@ async function submit(){
   const btn=document.getElementById("submit");btn.disabled=true;say(msg,"업로드 중…","");
   try{
     const stamp=Date.now();
-    const safe=nick.replace(/[^\w가-힣]/g,"_");
-    const p1=`${safe}/${stamp}_eq.jpg`, p2=`${safe}/${stamp}_insc.jpg`;
+    const rid=Math.random().toString(36).slice(2,8);
+    let safe=nick.replace(/[^A-Za-z0-9_-]/g,"");   // 저장소 키는 영문/숫자만 허용 → 한글 등 제거
+    if(!safe)safe="u";
+    const ext1=(eq.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+    const ext2=(insc.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+    const p1=`${safe}/${stamp}_${rid}_eq.${ext1}`, p2=`${safe}/${stamp}_${rid}_insc.${ext2}`;
     const u1=await sb.storage.from(BUCKET).upload(p1,eq,{upsert:false,contentType:eq.type});
     if(u1.error)throw u1.error;
     const u2=await sb.storage.from(BUCKET).upload(p2,insc,{upsert:false,contentType:insc.type});
