@@ -231,7 +231,7 @@
       </div>
       <div class="row">
         <label class="fld" style="flex:1">① 장비 스크린샷 *
-          <div class="drop" id="d-eq">게임 장비 화면 사진 선택/드래그<br><small>어떤 사진이든 장비 구도를 같은 크기로 맞춥니다. 배경은 그대로 둡니다</small>
+          <div class="drop" id="d-eq">게임 장비 화면 사진 선택/드래그<br><small>어떤 사진이든 장비 칸만 같은 크기로 맞춥니다. 배경은 그대로 둡니다</small>
             <input type="file" id="f-eq" accept="image/*" hidden></div>
         </label>
         <label class="fld" style="flex:1">② 비문 스크린샷
@@ -446,8 +446,8 @@ function pick(slot,drop,file,ocr){
   if(ocr) runOCR(slot,file);
 }
 
-/* 장비 구도만 통일. 배경은 지우지 않고, 다이아 군집을 같은 비율(720x960)로 맞춘다. */
-const GEAR_W=720, GEAR_H=960;
+/* 장비 칸만 타이트하게 맞춘다. 배경은 지우지 않는다. */
+const GEAR_H=960;
 function gearGold(r,g,b){
   return r>=150&&g>=95&&b<=165&&r>b+30&&g>b+15&&r+g>270;
 }
@@ -506,13 +506,11 @@ function gearFrame(img){
       items.push([(col[i][0]+col[i+1][0])/2,(col[i][1]+col[i+1][1])/2,medW,medH]);
   }
   const inv=1/scale;
-  let x0=Math.min(...items.map(t=>t[0]-t[2]));
-  let y0=Math.min(...items.map(t=>t[1]-t[3]));
-  let x1=Math.max(...items.map(t=>t[0]+t[2]));
-  let y1=Math.max(...items.map(t=>t[1]+t[3]));
-  const padX=(x1-x0)*0.08, padTop=(y1-y0)*0.03, padBot=(y1-y0)*0.05;
-  x0-=padX; y0-=padTop; x1+=padX; y1+=padBot;
-  // 사진 바깥의 흰 여백은 구도에서 뺀다
+  // 침식 1px만 되돌린다. 다이아 테두리가 칸 끝에 붙게 맞춘다.
+  let x0=Math.min(...items.map(t=>t[0]-t[2]))-1;
+  let y0=Math.min(...items.map(t=>t[1]-t[3]))-1;
+  let x1=Math.max(...items.map(t=>t[0]+t[2]))+1;
+  let y1=Math.max(...items.map(t=>t[1]+t[3]))+1;
   let L=sw, T=sh, R=0, B=0;
   for(let i=0,p=0;i<sw*sh;i++,p+=4){
     const r=d[p],gch=d[p+1],b=d[p+2],a=d[p+3];
@@ -521,15 +519,7 @@ function gearFrame(img){
     if(x<L)L=x; if(y<T)T=y; if(x>R)R=x; if(y>B)B=y;
   }
   if(R<=L||B<=T){ L=0; T=0; R=sw-1; B=sh-1; }
-  const aspect=GEAR_W/GEAR_H;
-  let bw=x1-x0, bh=y1-y0;
-  let cx=(x0+x1)/2, cy=(y0+y1)/2;
-  if(bw/bh<aspect) bw=bh*aspect; else bh=bw/aspect;
-  const aw=Math.max(1,R-L), ah=Math.max(1,B-T);
-  if(bw>aw||bh>ah){ const s=Math.min(aw/bw,ah/bh); bw*=s; bh*=s; }
-  cx=Math.min(Math.max(cx,L+bw/2),R-bw/2);
-  cy=Math.min(Math.max(cy,T+bh/2),B-bh/2);
-  x0=cx-bw/2; y0=cy-bh/2; x1=cx+bw/2; y1=cy+bh/2;
+  x0=Math.max(L,x0); y0=Math.max(T,y0); x1=Math.min(R,x1); y1=Math.min(B,y1);
   return [
     Math.max(0,Math.round(x0*inv)),
     Math.max(0,Math.round(y0*inv)),
@@ -555,8 +545,7 @@ function trimGearRule(img, box){
     if(dark/w>0.25) last=y;
   }
   if(last<0) return box;
-  const ny0=y0+last+1, nh=y1-ny0, nw=nh*(GEAR_W/GEAR_H), mx=(x0+x1)/2;
-  return [Math.max(0,Math.round(mx-nw/2)), ny0, Math.min(img.width,Math.round(mx+nw/2)), y1];
+  return [x0, y0+last+1, x1, y1];
 }
 function normalizeGear(file){
   return new Promise((resolve,reject)=>{
@@ -566,11 +555,11 @@ function normalizeGear(file){
         const W=img.width,H=img.height;
         let box=gearFrame(img)||[0,0,W,H];
         box=trimGearRule(img,box);
-        const out=document.createElement("canvas");
-        out.width=GEAR_W; out.height=GEAR_H;
-        const g=out.getContext("2d");
         const cw=Math.max(1,box[2]-box[0]), ch=Math.max(1,box[3]-box[1]);
-        g.drawImage(img,box[0],box[1],cw,ch,0,0,GEAR_W,GEAR_H);
+        const out=document.createElement("canvas");
+        out.height=GEAR_H; out.width=Math.max(1,Math.round(GEAR_H*cw/ch));
+        const g=out.getContext("2d");
+        g.drawImage(img,box[0],box[1],cw,ch,0,0,out.width,out.height);
         out.toBlob(b=>{
           if(!b){reject(new Error("blob"));return;}
           resolve(new File([b],"gear.png",{type:"image/png"}));
@@ -714,8 +703,6 @@ function hl(t){return esc(t)
 function card(r){
   const m=r.meta, dt=r.created_at?new Date(r.created_at).toLocaleDateString('ko-KR'):"";
   const name=m.name||"(사령관 미입력)";
-  const buffsHtml=m.buffs?`<div class="cmd-buffs"><div class="buffs-h">📊 버프 / 요약</div><div class="buffs-b">${hl(m.buffs)}</div></div>`:"";
-
   // 비문: 수치 입력이 있으면 재구성 패널, 없으면 원본 사진으로 폴백
   const inscData=(m.insc||[]).filter(s=>s.atk||s.def||s.hp||s.all||(s.bonus&&s.bonus.trim()));
   let inscPanel;
@@ -767,7 +754,6 @@ function card(r){
       ${inscPanel}
     </div>
     ${refRow}
-    ${buffsHtml}
   </div>`;
 }
 function zoom(src){const lb=document.getElementById("lb");document.getElementById("lbimg").src=src;lb.style.display="flex";}
