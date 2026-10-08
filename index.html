@@ -483,10 +483,17 @@ function gearFrame(img){
       }
     }
     const bw=x1-x0+1, bh=y1-y0+1, ratio=bw/Math.max(1,bh);
-    if(n>=120 && ratio>=0.72 && ratio<=1.4) comps.push({x0,y0,x1,y1});
+    const edge=x0<=2||y0<=2||x1>=sw-3||y1>=sh-3;
+    if(n>=120 && ratio>=0.72 && ratio<=1.4 && !edge) comps.push({x0,y0,x1,y1,n});
   }
-  if(comps.length<4) return null;
-  let items=comps.map(k=>[(k.x0+k.x1)/2,(k.y0+k.y1)/2,(k.x1-k.x0+1)/2,(k.y1-k.y0+1)/2]);
+  let use=comps;
+  if(use.length>=4){
+    const big=Math.max(...use.map(k=>k.n));
+    const sized=use.filter(k=>k.n>=big*0.45);
+    if(sized.length>=4) use=sized;
+  }
+  if(use.length<4) return null;
+  let items=use.map(k=>[(k.x0+k.x1)/2,(k.y0+k.y1)/2,(k.x1-k.x0+1)/2,(k.y1-k.y0+1)/2]);
   const xs=items.map(t=>t[0]).sort((a,b)=>a-b);
   const mid=xs[(xs.length/2)|0];
   const col=items.filter(t=>Math.abs(t[0]-mid)<sw*0.08).sort((a,b)=>a[1]-b[1]);
@@ -503,13 +510,25 @@ function gearFrame(img){
   let y0=Math.min(...items.map(t=>t[1]-t[3]));
   let x1=Math.max(...items.map(t=>t[0]+t[2]));
   let y1=Math.max(...items.map(t=>t[1]+t[3]));
-  const padX=(x1-x0)*0.1, padTop=(y1-y0)*0.02, padBot=(y1-y0)*0.08;
+  const padX=(x1-x0)*0.08, padTop=(y1-y0)*0.03, padBot=(y1-y0)*0.05;
   x0-=padX; y0-=padTop; x1+=padX; y1+=padBot;
-  // 항상 같은 세로 구도(3:4)가 되게 중심 기준으로 맞춘다
+  // 사진 바깥의 흰 여백은 구도에서 뺀다
+  let L=sw, T=sh, R=0, B=0;
+  for(let i=0,p=0;i<sw*sh;i++,p+=4){
+    const r=d[p],gch=d[p+1],b=d[p+2],a=d[p+3];
+    if(a<20||(r>245&&gch>245&&b>245)) continue;
+    const x=i%sw, y=(i/sw)|0;
+    if(x<L)L=x; if(y<T)T=y; if(x>R)R=x; if(y>B)B=y;
+  }
+  if(R<=L||B<=T){ L=0; T=0; R=sw-1; B=sh-1; }
   const aspect=GEAR_W/GEAR_H;
   let bw=x1-x0, bh=y1-y0;
-  const cx=(x0+x1)/2, cy=(y0+y1)/2;
+  let cx=(x0+x1)/2, cy=(y0+y1)/2;
   if(bw/bh<aspect) bw=bh*aspect; else bh=bw/aspect;
+  const aw=Math.max(1,R-L), ah=Math.max(1,B-T);
+  if(bw>aw||bh>ah){ const s=Math.min(aw/bw,ah/bh); bw*=s; bh*=s; }
+  cx=Math.min(Math.max(cx,L+bw/2),R-bw/2);
+  cy=Math.min(Math.max(cy,T+bh/2),B-bh/2);
   x0=cx-bw/2; y0=cy-bh/2; x1=cx+bw/2; y1=cy+bh/2;
   return [
     Math.max(0,Math.round(x0*inv)),
@@ -518,13 +537,35 @@ function gearFrame(img){
     Math.min(H,Math.round(y1*inv))
   ];
 }
+function trimGearRule(img, box){
+  const x0=box[0], y0=box[1], x1=box[2], y1=box[3];
+  const w=Math.max(1,x1-x0), h=Math.min(14,Math.max(1,y1-y0));
+  const c=document.createElement("canvas");
+  c.width=w; c.height=h;
+  const g=c.getContext("2d",{willReadFrequently:true});
+  g.drawImage(img,x0,y0,w,h,0,0,w,h);
+  const d=g.getImageData(0,0,w,h).data;
+  let last=-1;
+  for(let y=0;y<h;y++){
+    let dark=0;
+    for(let x=0;x<w;x++){
+      const p=(y*w+x)*4;
+      if(d[p]+d[p+1]+d[p+2]<50) dark++;
+    }
+    if(dark/w>0.25) last=y;
+  }
+  if(last<0) return box;
+  const ny0=y0+last+1, nh=y1-ny0, nw=nh*(GEAR_W/GEAR_H), mx=(x0+x1)/2;
+  return [Math.max(0,Math.round(mx-nw/2)), ny0, Math.min(img.width,Math.round(mx+nw/2)), y1];
+}
 function normalizeGear(file){
   return new Promise((resolve,reject)=>{
     const img=new Image();
     img.onload=()=>{
       try{
         const W=img.width,H=img.height;
-        const box=gearFrame(img)||[0,0,W,H];
+        let box=gearFrame(img)||[0,0,W,H];
+        box=trimGearRule(img,box);
         const out=document.createElement("canvas");
         out.width=GEAR_W; out.height=GEAR_H;
         const g=out.getContext("2d");
