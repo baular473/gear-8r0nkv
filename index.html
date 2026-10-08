@@ -92,7 +92,7 @@
   .eqframe{flex:1 1 0;min-width:0;margin:0;background:#000;border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative;}
   .eqframe img{width:100%;height:auto;object-fit:contain;background:#000;cursor:zoom-in;display:block;}
   .eqframe figcaption{position:static;font-size:10px;color:var(--mut);text-align:center;
-                      padding:5px;background:#111a2d;font-weight:600;}
+                      padding:16px 5px 8px;background:#111a2d;font-weight:600;}
 
   /* 재구성된 비문 패널 (레퍼런스 스타일) */
   .insc-panel{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
@@ -104,8 +104,8 @@
   .chip.w{background:linear-gradient(180deg,#f7f8fb,#d5dbe6);color:#1c2433;border:1px solid #c5cedd;}
   .insc-slot{background:linear-gradient(180deg,#111a2f,#0d1526);border:1px solid var(--line);border-radius:9px;padding:7px 9px;}
   .insc-slot .nm{font-size:11px;font-weight:700;color:var(--gold2);margin-bottom:4px;}
-  .insc-slot .st{display:flex;gap:6px;flex-wrap:wrap;}
-  .insc-slot .st b{font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;}
+  .insc-slot .st{display:flex;flex-direction:column;align-items:flex-start;gap:4px;}
+  .insc-slot .st b{font-size:12px;font-weight:700;border-radius:6px;padding:3px 8px;}
   .insc-slot .st b.a{background:rgba(255,107,107,.14);color:var(--atk);}
   .insc-slot .st b.d{background:rgba(91,179,255,.14);color:var(--def);}
   .insc-slot .st b.h{background:rgba(79,212,138,.14);color:var(--hp);}
@@ -511,6 +511,7 @@ function gearFrame(img){
   let y0=Math.min(...items.map(t=>t[1]-t[3]))-1;
   let x1=Math.max(...items.map(t=>t[0]+t[2]))+1;
   let y1=Math.max(...items.map(t=>t[1]+t[3]))+1;
+  y1+=(y1-y0)*0.05;
   let L=sw, T=sh, R=0, B=0;
   for(let i=0,p=0;i<sw*sh;i++,p+=4){
     const r=d[p],gch=d[p+1],b=d[p+2],a=d[p+3];
