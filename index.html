@@ -88,9 +88,9 @@
   .cmd-date{font-size:11px;color:var(--mut);text-align:right;flex:0 0 auto;}
 
   .cmd-body{display:flex;gap:12px;padding:12px 14px;align-items:flex-start;}
-  /* 올린 사진은 여백을 자른 원본 비율 그대로, 같은 폭으로 나란히 */
-  .eqframe{flex:1 1 0;min-width:0;margin:0;background:#10182c;border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative;}
-  .eqframe img{width:100%;height:auto;object-fit:contain;background:#10182c;cursor:zoom-in;display:block;}
+  /* 장비는 다이아만 잘라 검은 캔버스에 올린 사진 */
+  .eqframe{flex:1 1 0;min-width:0;margin:0;background:#000;border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative;}
+  .eqframe img{width:100%;height:auto;object-fit:contain;background:#000;cursor:zoom-in;display:block;}
   .eqframe figcaption{position:static;font-size:10px;color:var(--mut);text-align:center;
                       padding:5px;background:#111a2d;font-weight:600;}
 
@@ -226,7 +226,7 @@
       </div>
       <div class="row">
         <label class="fld" style="flex:1">① 장비 스크린샷 *
-          <div class="drop" id="d-eq">게임 장비 화면 사진 선택/드래그<br><small>업로드하면 자동으로 글자를 읽어 아래 항목을 채웁니다</small>
+          <div class="drop" id="d-eq">게임 장비 화면 사진 선택/드래그<br><small>다이아몬드 장비만 잘라 검은 배경으로 맞춥니다. 글자도 같이 읽습니다</small>
             <input type="file" id="f-eq" accept="image/*" hidden></div>
         </label>
         <label class="fld" style="flex:1">② 비문 스크린샷
@@ -429,10 +429,132 @@ function setupDrop(dropId,inputId,slot,ocr){
 }
 function pick(slot,drop,file,ocr){
   if(!file)return;
-  FILES[slot]=file; drop.classList.add('has');
-  let pv=drop.querySelector('.pv'); if(!pv){pv=document.createElement('div');pv.className='pv';drop.appendChild(pv);}
-  pv.innerHTML=`선택됨: ${file.name}<br><img src="${URL.createObjectURL(file)}">`;
+  const show=(f)=>{
+    FILES[slot]=f; drop.classList.add('has');
+    let pv=drop.querySelector('.pv'); if(!pv){pv=document.createElement('div');pv.className='pv';drop.appendChild(pv);}
+    pv.innerHTML=`선택됨: ${file.name}<br><img src="${URL.createObjectURL(f)}">`;
+  };
+  if(slot==="eq"){
+    show(file);
+    normalizeGear(file).then(f=>{show(f);}).catch(()=>{});
+  }else show(file);
   if(ocr) runOCR(slot,file);
+}
+
+/* 장비 화면이 어떻게 들어와도 금색 다이아 군집만 잘라 검은 캔버스(540x980)에 맞춘다. */
+function gearGold(r,g,b){
+  if(r<155||g<100||b>150)return false;
+  if(r<=b+40||g<=b+25)return false;
+  if(r+g<280)return false;
+  return true;
+}
+function gearComponents(mask,w,h){
+  const seen=new Uint8Array(w*h), out=[];
+  for(let i=0;i<mask.length;i++){
+    if(!mask[i]||seen[i])continue;
+    const q=[i]; seen[i]=1;
+    let n=0,x0=w,y0=h,x1=0,y1=0;
+    while(q.length){
+      const c=q.pop(); n++;
+      const x=c%w, y=(c/w)|0;
+      if(x<x0)x0=x; if(y<y0)y0=y; if(x>x1)x1=x; if(y>y1)y1=y;
+      const nb=[c-1,c+1,c-w,c+w];
+      for(const j of nb){
+        if(j<0||j>=mask.length)continue;
+        const nx=j%w;
+        if(Math.abs(nx-x)>1)continue;
+        if(mask[j]&&!seen[j]){seen[j]=1;q.push(j);}
+      }
+    }
+    if(n>=6)out.push({x0,y0,x1,y1,n});
+  }
+  return out;
+}
+function gearBox(img){
+  const W=img.width,H=img.height;
+  let scale=280/Math.max(W,H); if(scale>1)scale=1;
+  const sw=Math.max(1,Math.round(W*scale)), sh=Math.max(1,Math.round(H*scale));
+  const c=document.createElement("canvas"); c.width=sw; c.height=sh;
+  const g=c.getContext("2d",{willReadFrequently:true});
+  g.drawImage(img,0,0,sw,sh);
+  const d=g.getImageData(0,0,sw,sh).data;
+  const mask=new Uint8Array(sw*sh);
+  for(let i=0,p=0;i<mask.length;i++,p+=4) if(gearGold(d[p],d[p+1],d[p+2])) mask[i]=1;
+  const comps=gearComponents(mask,sw,sh);
+  if(!comps.length)return null;
+  const big=comps.reduce((a,b)=>a.n>=b.n?a:b);
+  const keep=[];
+  let changed=true;
+  while(changed){
+    changed=false;
+    let x0,y0,x1,y1;
+    if(keep.length){
+      x0=Math.min(...keep.map(k=>k.x0)); y0=Math.min(...keep.map(k=>k.y0));
+      x1=Math.max(...keep.map(k=>k.x1)); y1=Math.max(...keep.map(k=>k.y1));
+    }else{ x0=big.x0; y0=big.y0; x1=big.x1; y1=big.y1; }
+    const bw=Math.max(1,x1-x0), bh=Math.max(1,y1-y0);
+    for(const k of comps){
+      if(keep.includes(k))continue;
+      const cw=k.x1-k.x0+1, ch=k.y1-k.y0+1;
+      if(k.n<big.n*0.06)continue;
+      if(cw>ch*2.4 && ch<sw*0.12)continue;
+      const cx=(k.x0+k.x1)/2, cy=(k.y0+k.y1)/2;
+      if(cx<x0-bw*0.35||cx>x1+bw*0.35)continue;
+      if(cy<y0-bh*0.55||cy>y1+bh*0.35)continue;
+      keep.push(k); changed=true;
+    }
+  }
+  if(!keep.length)keep.push(big);
+  let x0=Math.min(...keep.map(k=>k.x0)), y0=Math.min(...keep.map(k=>k.y0));
+  let x1=Math.max(...keep.map(k=>k.x1)), y1=Math.max(...keep.map(k=>k.y1));
+  const padX=((x1-x0)*0.035)|0;
+  x0=Math.max(0,x0-padX); x1=Math.min(sw-1,x1+padX);
+  const inv=1/scale;
+  const box=[Math.round(x0*inv), Math.round(y0*inv), Math.min(W,Math.round((x1+1)*inv)), Math.min(H,Math.round((y1+1)*inv))];
+  const src=document.createElement("canvas"); src.width=W; src.height=H;
+  const sg=src.getContext("2d",{willReadFrequently:true});
+  sg.drawImage(img,0,0);
+  const full=sg.getImageData(0,0,W,H).data;
+  const pix=(x,y)=>{const p=(y*W+x)*4; return full[p]>245&&full[p+1]>245&&full[p+2]>245;};
+  const whiteCol=(x)=>{
+    let hit=0,tot=0;
+    for(let y=box[1];y<box[3];y+=3){tot++; if(pix(x,y))hit++;}
+    return tot&&hit>tot*0.82;
+  };
+  const whiteRow=(y)=>{
+    let hit=0,tot=0;
+    for(let x=box[0];x<box[2];x+=3){tot++; if(pix(x,y))hit++;}
+    return tot&&hit>tot*0.82;
+  };
+  while(box[2]-box[0]>20 && whiteCol(box[2]-1)) box[2]--;
+  while(box[2]-box[0]>20 && whiteCol(box[0])) box[0]++;
+  while(box[3]-box[1]>20 && whiteRow(box[3]-1)) box[3]--;
+  while(box[3]-box[1]>20 && whiteRow(box[1])) box[1]++;
+  return box;
+}
+function normalizeGear(file){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const box=gearBox(img)||[0,0,img.width,img.height];
+        const out=document.createElement("canvas");
+        out.width=540; out.height=980;
+        const g=out.getContext("2d");
+        g.fillStyle="#000"; g.fillRect(0,0,540,980);
+        const cw=box[2]-box[0], ch=box[3]-box[1];
+        const fit=Math.min(540*0.94/cw, 980*0.94/ch);
+        const nw=Math.max(1,Math.round(cw*fit)), nh=Math.max(1,Math.round(ch*fit));
+        g.drawImage(img,box[0],box[1],cw,ch,(540-nw)/2,(980-nh)/2,nw,nh);
+        out.toBlob(b=>{
+          if(!b){reject(new Error("blob"));return;}
+          resolve(new File([b],"gear.png",{type:"image/png"}));
+        },"image/png");
+      }catch(e){reject(e);}
+    };
+    img.onerror=()=>reject(new Error("img"));
+    img.src=URL.createObjectURL(file);
+  });
 }
 async function runOCR(slot,file){
   const stat=document.getElementById("ocrstat");
