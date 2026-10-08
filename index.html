@@ -87,11 +87,10 @@
   .bdg.set{background:#3a2a16;color:var(--gold2);}
   .cmd-date{font-size:11px;color:var(--mut);text-align:right;flex:0 0 auto;}
 
-  .cmd-body{display:flex;gap:12px;padding:12px 14px;align-items:stretch;}
-  /* 통일된 세로 장비 틀 */
-  .eqframe{flex:0 0 42%;margin:0;background:#0a1120;border:1px solid var(--line);border-radius:12px;overflow:hidden;
-           aspect-ratio:4/5;position:relative;}
-  .eqframe img{width:100%;height:100%;object-fit:contain;background:#0a1120;cursor:zoom-in;display:block;}
+  .cmd-body{display:flex;gap:12px;padding:12px 14px;align-items:flex-start;}
+  /* 올린 사진은 여백을 자른 원본 비율 그대로, 같은 폭으로 나란히 */
+  .eqframe{flex:1 1 0;min-width:0;margin:0;background:#10182c;border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative;}
+  .eqframe img{width:100%;height:auto;object-fit:contain;background:#10182c;cursor:zoom-in;display:block;}
   .eqframe figcaption{position:absolute;left:0;right:0;bottom:0;font-size:10px;color:var(--mut);text-align:center;
                       padding:4px;background:linear-gradient(0deg,rgba(10,17,32,.95),rgba(10,17,32,0));font-weight:600;}
 
@@ -118,7 +117,7 @@
   .ref-row .fig img{height:150px;}
   details.refs{padding:0 14px 10px;}
   details.refs summary{cursor:pointer;color:var(--mut);font-size:11px;font-weight:600;outline:none;}
-  @media(max-width:520px){.cmd-body{flex-direction:column;}.eqframe{flex:none;width:100%;aspect-ratio:16/10;}}
+  @media(max-width:520px){.cmd-body{flex-direction:column;}.eqframe{flex:none;width:100%;}}
 
   .cmd-buffs{padding:4px 15px 15px;}
   .buffs-h{font-size:12px;color:var(--gold2);font-weight:700;letter-spacing:1px;text-align:center;
@@ -587,7 +586,7 @@ function card(r){
                (s.bonus&&s.bonus.trim()?`<div class="bn">${hl(s.bonus)}</div>`:"")+`</div>`;
       }).join("")+`</div>`;
   }else if(r.insc_url){
-    inscPanel=`<figure class="eqframe" style="flex:1"><img src="${r.insc_url}" onclick="zoom(this.src)"><figcaption>비문/특성</figcaption></figure>`;
+    inscPanel=`<figure class="eqframe"><img src="${r.insc_url}" onclick="zoom(this.src)"><figcaption>${esc(m.sideLabel||"비문")}</figcaption></figure>`;
   }else{
     inscPanel=`<div class="insc-panel"><div class="ph">💠 비문</div><div class="insc-slot" style="color:#8a97b2;font-size:11px">비문 수치 미입력</div></div>`;
   }
@@ -605,7 +604,7 @@ function card(r){
       <div class="portrait"><img src="${r.eq_url}" alt=""></div>
       <div class="cmd-id">
         <div class="cmd-name">${esc(name)} ${m.exp?'<span class="exp">Expertised</span>':''}</div>
-        <div class="cmd-lv">Lv.${m.level||60} <span class="st">${stars(m.stars)}</span></div>
+        <div class="cmd-lv">${m.level?`Lv.${m.level}`:""} ${m.stars?`<span class="st">${stars(m.stars)}</span>`:""}</div>
         <div class="cmd-badges">
           ${m.troop?`<span class="bdg troop">${esc(m.troop)}</span>`:''}
           <span class="bdg build">${esc(r.build)}</span>
